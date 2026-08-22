@@ -1,0 +1,2101 @@
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INKSPIRE | Official Digital Newsletter | Presidency School Banashankari</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23002B49'/><path d='M30 25 L70 25 L70 75 L30 75 Z' fill='none' stroke='%23C5A059' stroke-width='4'/><path d='M30 35 L70 35 M30 45 L60 45 M30 55 L65 55 M30 65 L50 65' stroke='%23FFFFFF' stroke-width='3' stroke-linecap='round'/></svg>">
+
+  <!-- Typography: Playfair Display, Cormorant Garamond, Inter, Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      /* Official Presidency School Banashankari Branding Colors */
+      --color-primary: #002B49;       /* Official School Blue */
+      --color-primary-dark: #001C38;  /* Deep Royal Navy */
+      --color-primary-light: #0A3D62; /* Lighter Accent Navy */
+      --color-accent-gold: #C5A059;   /* Subtle Academic Gold */
+      --color-accent-gold-light: #E8D3A7;
+      --color-bg-light: #F8F9FA;      /* Very Light Grey */
+      --color-bg-alt: #F1F3F6;        /* Subtle Grey Alternate */
+      --color-surface: #FFFFFF;       /* Pure White */
+      --color-text-main: #1C2530;     /* Editorial Dark Text */
+      --color-text-muted: #5A6578;    /* Muted Text */
+      --color-border: #E2E7ED;       /* Border Grey */
+      
+      /* Typography Variables */
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-heading: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-sans-accent: 'Plus Jakarta Sans', system-ui, sans-serif;
+      
+      /* Elevations & Shadows */
+      --shadow-sm: 0 2px 8px rgba(0, 43, 73, 0.06);
+      --shadow-md: 0 8px 24px rgba(0, 43, 73, 0.1);
+      --shadow-lg: 0 16px 40px rgba(0, 43, 73, 0.15);
+      --shadow-paper: -5px 0 15px rgba(0,0,0,0.12), 5px 0 15px rgba(0,0,0,0.08);
+
+      --transition-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Resets & Base Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--color-bg-light);
+      color: var(--color-text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* -------------------------------------------------------------
+       1. LOADING SCREEN
+    ------------------------------------------------------------- */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--color-primary-dark);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-surface);
+      transition: opacity 0.8s var(--transition-smooth), visibility 0.8s;
+    }
+
+    .loader-brand {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeInDown 1s ease-out;
+    }
+
+    .loader-crest {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.25rem;
+      border: 2px solid var(--color-accent-gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-accent-gold);
+      font-size: 1.8rem;
+      box-shadow: 0 0 20px rgba(197, 160, 89, 0.2);
+    }
+
+    .loader-title {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      letter-spacing: 4px;
+      font-weight: 700;
+      color: var(--color-surface);
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .loader-subtitle {
+      font-family: var(--font-sans-accent);
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      color: var(--color-accent-gold);
+      text-transform: uppercase;
+    }
+
+    .loader-school {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+
+    .loader-progress-container {
+      width: 220px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .loader-progress-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-gold-light));
+      transition: width 0.4s ease;
+      box-shadow: 0 0 10px var(--color-accent-gold);
+    }
+
+    .loader-status {
+      margin-top: 0.8rem;
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* -------------------------------------------------------------
+       2. STICKY HEADER NAVIGATION
+    ------------------------------------------------------------- */
+    .header-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 43, 73, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .header-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 0.85rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      text-decoration: none;
+    }
+
+    .brand-logo-img {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-divider {
+      height: 32px;
+      width: 1px;
+      background-color: var(--color-border);
+    }
+
+    .brand-text-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-inkspire {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .brand-subtext {
+      font-family: var(--font-sans-accent);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--color-accent-gold);
+      margin-top: 3px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-link {
+      font-family: var(--font-sans-accent);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--color-accent-gold);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--color-border);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: var(--color-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+    }
+
+    .btn-icon:hover {
+      background: var(--color-primary);
+      color: var(--color-surface);
+      border-color: var(--color-primary);
+    }
+
+    .btn-cta-primary {
+      background: var(--color-primary);
+      color: var(--color-surface);
+      border: 1px solid var(--color-primary);
+      padding: 0.65rem 1.4rem;
+      font-family: var(--font-sans-accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 43, 73, 0.15);
+    }
+
+    .btn-cta-primary:hover {
+      background: var(--color-accent-gold);
+      border-color: var(--color-accent-gold);
+      color: var(--color-primary-dark);
+      transform: translateY(-1px);
+    }
+
+    /* -------------------------------------------------------------
+       3. EDITORIAL HERO SECTION
+    ------------------------------------------------------------- */
+    .hero-section {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      background-color: var(--color-primary-dark);
+      overflow: hidden;
+    }
+
+    .hero-bg-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: scale(1.05);
+      transition: transform 10s ease;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(0, 28, 56, 0.94) 0%,
+        rgba(0, 43, 73, 0.88) 50%,
+        rgba(10, 35, 66, 0.78) 100%
+      );
+    }
+
+    .hero-container {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+      color: var(--color-surface);
+      text-align: center;
+    }
+
+    .hero-meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(197, 160, 89, 0.15);
+      border: 1px solid var(--color-accent-gold);
+      padding: 0.4rem 1.25rem;
+      border-radius: 50px;
+      font-family: var(--font-sans-accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-accent-gold-light);
+      margin-bottom: 2rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 8vw, 6.5rem);
+      font-weight: 800;
+      letter-spacing: 6px;
+      line-height: 1;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      color: #FFFFFF;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-heading);
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--color-accent-gold-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-school-name {
+      font-family: var(--font-sans-accent);
+      font-size: clamp(0.9rem, 2vw, 1.2rem);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 3rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+      background: var(--color-accent-gold);
+      color: var(--color-primary-dark);
+      padding: 1rem 2.5rem;
+      font-family: var(--font-sans-accent);
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 25px rgba(197, 160, 89, 0.3);
+      border: 2px solid var(--color-accent-gold);
+    }
+
+    .btn-hero-primary:hover {
+      background: #D8B46C;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(197, 160, 89, 0.4);
+    }
+
+    .btn-hero-secondary {
+      background: transparent;
+      color: var(--color-surface);
+      padding: 1rem 2.25rem;
+      font-family: var(--font-sans-accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-hero-secondary:hover {
+      border-color: var(--color-surface);
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* -------------------------------------------------------------
+       4. CENTERPIECE FLIPBOOK SECTION
+    ------------------------------------------------------------- */
+    .flipbook-section {
+      padding: 4rem 1.5rem 6rem;
+      background: var(--color-bg-light);
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 750px;
+      margin: 0 auto 3rem;
+    }
+
+    .section-tag {
+      font-family: var(--font-sans-accent);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--color-accent-gold);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 2.4rem;
+      color: var(--color-primary);
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+    }
+
+    .section-desc {
+      color: var(--color-text-muted);
+      font-size: 1rem;
+    }
+
+    /* Flipbook Viewer Workspace */
+    .flipbook-workspace {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--color-surface);
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+    }
+
+    /* Control Bar */
+    .flipbook-toolbar {
+      background: var(--color-primary);
+      color: var(--color-surface);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 2px solid var(--color-accent-gold);
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--color-surface);
+      padding: 0.45rem 0.85rem;
+      border-radius: 4px;
+      font-size: 0.825rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans-accent);
+    }
+
+    .tool-btn:hover {
+      background: var(--color-accent-gold);
+      color: var(--color-primary-dark);
+      border-color: var(--color-accent-gold);
+    }
+
+    .page-indicator {
+      font-family: var(--font-sans-accent);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--color-accent-gold-light);
+    }
+
+    /* Flipbook Render Stage */
+    .flipbook-stage {
+      min-height: 650px;
+      background: #EAEFF4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      perspective: 2000px;
+      position: relative;
+      user-select: none;
+    }
+
+    .book-container {
+      position: relative;
+      width: 900px;
+      height: 600px;
+      display: flex;
+      transition: transform 0.3s ease;
+      transform-style: preserve-3d;
+      box-shadow: 0 20px 50px rgba(0, 43, 73, 0.25);
+      border-radius: 4px;
+    }
+
+    /* Individual Book Page Spread */
+    .book-page {
+      width: 50%;
+      height: 100%;
+      background: #FFF;
+      position: relative;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.05);
+      padding: 2.5rem 2rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backface-visibility: hidden;
+      transform-origin: left center;
+      transition: transform 0.6s var(--transition-smooth);
+    }
+
+    .book-page.page-left {
+      border-radius: 4px 0 0 4px;
+      border-right: 1px solid rgba(0,0,0,0.1);
+      box-shadow: inset -15px 0 20px -10px rgba(0,0,0,0.15);
+    }
+
+    .book-page.page-right {
+      border-radius: 0 4px 4px 0;
+      box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.15);
+    }
+
+    .page-spine-shadow {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 30px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .page-left .page-spine-shadow {
+      right: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.12));
+    }
+
+    .page-right .page-spine-shadow {
+      left: 0;
+      background: linear-gradient(to left, rgba(0,0,0,0), rgba(0,0,0,0.12));
+    }
+
+    .page-number {
+      font-family: var(--font-sans-accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-top: 1px solid var(--color-border);
+      padding-top: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Page Content Templates */
+    .page-header-tag {
+      font-family: var(--font-sans-accent);
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--color-accent-gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-editorial-title {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      line-height: 1.25;
+      color: var(--color-primary);
+      margin-bottom: 1rem;
+    }
+
+    .page-article-text {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: #334155;
+      text-align: justify;
+    }
+
+    .page-article-text p {
+      margin-bottom: 0.85rem;
+    }
+
+    .page-article-text p::first-letter {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      float: left;
+      line-height: 1;
+      padding-right: 6px;
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+
+    .page-img-frame {
+      width: 100%;
+      height: 180px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 1rem 0;
+      position: relative;
+    }
+
+    .page-img-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .page-quote-box {
+      border-left: 3px solid var(--color-accent-gold);
+      padding-left: 1rem;
+      margin: 1rem 0;
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--color-primary);
+      background: var(--color-bg-light);
+      padding: 0.85rem 1rem;
+    }
+
+    /* Cover Page Styling */
+    .cover-spread {
+      width: 100%;
+      height: 100%;
+      background: var(--color-primary-dark);
+      color: var(--color-surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3rem;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cover-header {
+      border-bottom: 1px solid rgba(197, 160, 89, 0.4);
+      padding-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .cover-main-title {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--color-surface);
+      line-height: 1;
+    }
+
+    .cover-feature-badge {
+      background: var(--color-accent-gold);
+      color: var(--color-primary-dark);
+      font-family: var(--font-sans-accent);
+      font-weight: 800;
+      font-size: 0.7rem;
+      letter-spacing: 1.5px;
+      padding: 0.35rem 0.85rem;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .cover-hero-box {
+      margin: 2rem 0;
+    }
+
+    .cover-headline {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--color-accent-gold-light);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .cover-lead {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 80%;
+      line-height: 1.6;
+    }
+
+    .cover-footer {
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-sans-accent);
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* Flipbook Bottom Controls */
+    .flipbook-footer-nav {
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-arrow-btn {
+      background: var(--color-bg-light);
+      border: 1px solid var(--color-border);
+      color: var(--color-primary);
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      font-family: var(--font-sans-accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .nav-arrow-btn:hover:not(:disabled) {
+      background: var(--color-primary);
+      color: var(--color-surface);
+      border-color: var(--color-primary);
+    }
+
+    .nav-arrow-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Slider Bar */
+    .page-slider {
+      flex: 1;
+      max-width: 400px;
+      margin: 0 1.5rem;
+      accent-color: var(--color-primary);
+    }
+
+    /* -------------------------------------------------------------
+       5. TABLE OF CONTENTS DRAWER & SEARCH MODAL
+    ------------------------------------------------------------- */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 28, 56, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .drawer-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .toc-drawer {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 100%;
+      max-width: 400px;
+      height: 100%;
+      background: var(--color-surface);
+      z-index: 2001;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+      transition: right 0.4s var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toc-drawer.active {
+      right: 0;
+    }
+
+    .drawer-header {
+      background: var(--color-primary);
+      color: var(--color-surface);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--color-accent-gold);
+    }
+
+    .drawer-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+    }
+
+    .drawer-close {
+      background: transparent;
+      border: none;
+      color: var(--color-surface);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .toc-list {
+      list-style: none;
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .toc-item {
+      padding: 1rem;
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s ease;
+      border-radius: 4px;
+    }
+
+    .toc-item:hover {
+      background: var(--color-bg-light);
+    }
+
+    .toc-item-title {
+      font-family: var(--font-sans-accent);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--color-primary);
+    }
+
+    .toc-item-sub {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .toc-page-num {
+      font-family: var(--font-display);
+      font-weight: 700;
+      color: var(--color-accent-gold);
+      font-size: 1.1rem;
+    }
+
+    /* Search Modal */
+    .modal-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      width: 90%;
+      max-width: 600px;
+      background: var(--color-surface);
+      border-radius: 8px;
+      z-index: 2002;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      padding: 2rem;
+    }
+
+    .modal-container.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .search-input-box {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      border: 2px solid var(--color-primary);
+      border-radius: 4px;
+      outline: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-results-list {
+      max-height: 300px;
+      overflow-y: auto;
+      list-style: none;
+    }
+
+    /* -------------------------------------------------------------
+       6. ARCHIVE SECTION (PREVIOUS EDITIONS)
+    ------------------------------------------------------------- */
+    .archive-section {
+      padding: 6rem 1.5rem;
+      background: var(--color-bg-alt);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .archive-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2.5rem;
+    }
+
+    .archive-card {
+      background: var(--color-surface);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-border);
+      transition: all 0.35s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .archive-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--color-accent-gold);
+    }
+
+    .archive-thumb {
+      height: 260px;
+      background: var(--color-primary-dark);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-surface);
+    }
+
+    .archive-thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+      transition: transform 0.5s ease;
+    }
+
+    .archive-card:hover .archive-thumb-img {
+      transform: scale(1.08);
+      opacity: 1;
+    }
+
+    .archive-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: var(--color-accent-gold);
+      color: var(--color-primary-dark);
+      font-family: var(--font-sans-accent);
+      font-weight: 800;
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      padding: 0.3rem 0.75rem;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+
+    .archive-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .archive-vol {
+      font-family: var(--font-sans-accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .archive-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      color: var(--color-primary);
+      margin: 0.35rem 0 0.75rem;
+      line-height: 1.3;
+    }
+
+    .archive-meta {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .archive-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-archive-read {
+      flex: 1;
+      background: var(--color-primary);
+      color: var(--color-surface);
+      text-align: center;
+      padding: 0.6rem;
+      font-family: var(--font-sans-accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 4px;
+      text-decoration: none;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: background 0.2s ease;
+    }
+
+    .btn-archive-read:hover {
+      background: var(--color-accent-gold);
+      color: var(--color-primary-dark);
+    }
+
+    /* -------------------------------------------------------------
+       7. EDITORIAL & PRINCIPAL SPOTLIGHT SECTION
+    ------------------------------------------------------------- */
+    .about-section {
+      padding: 6rem 1.5rem;
+      background: var(--color-surface);
+    }
+
+    .about-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .about-image-wrapper {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .about-image-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(197, 160, 89, 0.3);
+      pointer-events: none;
+      margin: 12px;
+    }
+
+    .about-img {
+      width: 100%;
+      height: 480px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .about-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .about-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      color: var(--color-primary);
+      margin-bottom: 1.25rem;
+      line-height: 1.2;
+    }
+
+    .about-lead {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      color: var(--color-primary-light);
+      font-style: italic;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .about-text {
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .editorial-board-box {
+      background: var(--color-bg-light);
+      border-left: 3px solid var(--color-accent-gold);
+      padding: 1.25rem;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .board-title {
+      font-family: var(--font-sans-accent);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--color-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .board-names {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    /* -------------------------------------------------------------
+       8. FOOTER
+    ------------------------------------------------------------- */
+    .site-footer {
+      background: var(--color-primary-dark);
+      color: var(--color-surface);
+      padding: 5rem 1.5rem 2rem;
+      border-top: 3px solid var(--color-accent-gold);
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 3.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .footer-brand-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .footer-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-logo-img {
+      height: 52px;
+      width: auto;
+      background: #FFF;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .footer-brand-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: var(--color-surface);
+    }
+
+    .footer-brand-sub {
+      font-family: var(--font-sans-accent);
+      font-size: 0.7rem;
+      color: var(--color-accent-gold);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .footer-desc {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      max-width: 420px;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-heading {
+      font-family: var(--font-sans-accent);
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--color-accent-gold-light);
+      margin-bottom: 1.25rem;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.75);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--color-accent-gold);
+    }
+
+    .footer-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .footer-info-item i {
+      color: var(--color-accent-gold);
+      margin-top: 3px;
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 0.85rem;
+    }
+
+    .social-icon-link {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .social-icon-link:hover {
+      background: var(--color-accent-gold);
+      color: var(--color-primary-dark);
+    }
+
+    /* Toast notification */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--color-primary-dark);
+      color: var(--color-surface);
+      padding: 0.85rem 1.5rem;
+      border-left: 4px solid var(--color-accent-gold);
+      border-radius: 4px;
+      box-shadow: var(--shadow-lg);
+      font-family: var(--font-sans-accent);
+      font-size: 0.85rem;
+      z-index: 3000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Keyframe Animations */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1024px) {
+      .book-container {
+        width: 100%;
+        max-width: 700px;
+        height: 520px;
+      }
+      .about-container {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .footer-container {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .hero-title {
+        letter-spacing: 2px;
+      }
+      .book-container {
+        height: 460px;
+      }
+      .book-page {
+        padding: 1.5rem 1rem;
+      }
+      .page-editorial-title {
+        font-size: 1.35rem;
+      }
+      .footer-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. LOADING SCREEN -->
+  <div id="loading-screen">
+    <div class="loader-brand">
+      <div class="loader-crest">
+        <i class="fa-solid fa-book-open-reader"></i>
+      </div>
+      <h1 class="loader-title">INKSPIRE</h1>
+      <p class="loader-subtitle">Official Digital Newsletter</p>
+      <p class="loader-school">Presidency School Banashankari</p>
+    </div>
+    <div class="loader-progress-container">
+      <div class="loader-progress-bar" id="loader-bar"></div>
+    </div>
+    <div class="loader-status" id="loader-status">Initializing Publication Suite...</div>
+  </div>
+
+  <!-- 2. STICKY NAVIGATION -->
+  <header class="header-nav">
+    <div class="header-container">
+      <a href="#" class="brand-group">
+        <img src="https://presidencyschoolbsk.org/wp-content/uploads/2025/02/PSBSK.webp" alt="Presidency School Banashankari" class="brand-logo-img">
+        <div class="brand-divider"></div>
+        <div class="brand-text-block">
+          <span class="brand-inkspire">INKSPIRE</span>
+          <span class="brand-subtext">Presidency Banashankari</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#hero" class="nav-link">Home</a></li>
+          <li><a href="#flipbook" class="nav-link">Current Edition</a></li>
+          <li><a href="#archives" class="nav-link">Previous Issues</a></li>
+          <li><a href="#about" class="nav-link">Editorial Team</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-icon" id="btn-open-search" title="Search Articles">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="btn-icon" id="btn-open-toc" title="Table of Contents">
+          <i class="fa-solid fa-list-ul"></i>
+        </button>
+        <a href="#flipbook" class="btn-cta-primary">Read Latest Issue</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. EDITORIAL HERO SECTION -->
+  <section class="hero-section" id="hero">
+    <img src="https://presidencyschoolbsk.org/wp-content/uploads/2025/02/PSBSK.webp" alt="Presidency School Banashankari Campus" class="hero-bg-image">
+    <div class="hero-overlay"></div>
+    
+    <div class="hero-container">
+      <div class="hero-meta-badge">
+        <i class="fa-solid fa-certificate"></i>
+        <span>Vol. IV • Issue 02 • August 2026</span>
+      </div>
+      
+      <h1 class="hero-title">INKSPIRE</h1>
+      <p class="hero-subtitle">Official Digital Newsletter</p>
+      <p class="hero-school-name">Presidency School Banashankari</p>
+      
+      <div class="hero-buttons">
+        <a href="#flipbook" class="btn-hero-primary">
+          <i class="fa-solid fa-book-open"></i> Read Latest Issue
+        </a>
+        <a href="#archives" class="btn-hero-secondary">
+          <i class="fa-solid fa-box-archive"></i> Browse Previous Editions
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. FLIPBOOK EXPERIENCE (CENTERPIECE) -->
+  <section class="flipbook-section" id="flipbook">
+    <div class="section-header">
+      <span class="section-tag">Interactive Digital Reader</span>
+      <h2 class="section-title">Current Edition Experience</h2>
+      <p class="section-desc">Flip through the pages of INKSPIRE Vol. IV Issue 2 for live articles, student creative artwork, academic updates, and campus achievements.</p>
+    </div>
+
+    <div class="flipbook-workspace">
+      <!-- Toolbar -->
+      <div class="flipbook-toolbar">
+        <div class="toolbar-group">
+          <button class="tool-btn" id="tool-toc-btn">
+            <i class="fa-solid fa-bars-staggered"></i> Index
+          </button>
+          <button class="tool-btn" id="tool-zoom-in">
+            <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom In
+          </button>
+          <button class="tool-btn" id="tool-zoom-out">
+            <i class="fa-solid fa-magnifying-glass-minus"></i> Zoom Out
+          </button>
+        </div>
+
+        <div class="page-indicator" id="page-indicator-text">
+          Pages 1 – 2 of 10
+        </div>
+
+        <div class="toolbar-group">
+          <button class="tool-btn" id="tool-download">
+            <i class="fa-solid fa-file-pdf"></i> PDF
+          </button>
+          <button class="tool-btn" id="tool-fullscreen">
+            <i class="fa-solid fa-expand"></i> Fullscreen
+          </button>
+        </div>
+      </div>
+
+      <!-- Stage & Book Container -->
+      <div class="flipbook-stage" id="flipbook-stage">
+        <div class="book-container" id="book-element">
+          <!-- Left Page Spread -->
+          <div class="book-page page-left" id="left-page-content">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Right Page Spread -->
+          <div class="book-page page-right" id="right-page-content">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Footer Controls -->
+      <div class="flipbook-footer-nav">
+        <button class="nav-arrow-btn" id="btn-prev-page">
+          <i class="fa-solid fa-arrow-left"></i> Previous Spread
+        </button>
+
+        <input type="range" class="page-slider" id="page-range-slider" min="1" max="5" value="1">
+
+        <button class="nav-arrow-btn" id="btn-next-page">
+          Next Spread <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. ARCHIVE SECTION -->
+  <section class="archive-section" id="archives">
+    <div class="section-header">
+      <span class="section-tag">Digital Repository</span>
+      <h2 class="section-title">Previous Publications</h2>
+      <p class="section-desc">Access complete archived editions of INKSPIRE from previous academic terms and celebrate our institutional milestone history.</p>
+    </div>
+
+    <div class="archive-grid">
+      <!-- Archive Card 1 -->
+      <article class="archive-card">
+        <div class="archive-thumb">
+          <img src="https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTTmxz3iyAugQOeR4cnGXzeLsO_0Vd154ZYag7CfpJHlLOvjQiT71YrV-Ut76nZRHWRhOGjrNGLqcAyPF4" alt="INKSPIRE Vol III Issue 4" class="archive-thumb-img">
+          <span class="archive-badge">Spring 2026</span>
+        </div>
+        <div class="archive-body">
+          <div>
+            <span class="archive-vol">Volume III • Issue 04</span>
+            <h3 class="archive-title">Innovations in STEM & Sports Leadership</h3>
+            <p class="archive-meta">Published March 2026 • 24 Pages</p>
+          </div>
+          <div class="archive-actions">
+            <a href="#flipbook" class="btn-archive-read">View Issue</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Archive Card 2 -->
+      <article class="archive-card">
+        <div class="archive-thumb">
+          <img src="https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcSZVuXsRH5jIY0R-Io5fjjdx_JnWWMBPkOCyN_hC9BIM4YWDrlsc3nN0kbhhSYrVDA7EFr7dkBe_ORxTCY" alt="INKSPIRE Vol III Issue 3" class="archive-thumb-img">
+          <span class="archive-badge">Winter 2025</span>
+        </div>
+        <div class="archive-body">
+          <div>
+            <span class="archive-vol">Volume III • Issue 03</span>
+            <h3 class="archive-title">Annual Cultural Spectacle & Arts Showcase</h3>
+            <p class="archive-meta">Published December 2025 • 28 Pages</p>
+          </div>
+          <div class="archive-actions">
+            <a href="#flipbook" class="btn-archive-read">View Issue</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Archive Card 3 -->
+      <article class="archive-card">
+        <div class="archive-thumb">
+          <img src="https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcQvRT12S9CrnHaY-u7TQ_k4zkTc2ZH2JcvHWQcP--f1V3Rj3Wo9Mdq6QfYoTGJf31vz4ZREIoV4CSsXR3Q" alt="INKSPIRE Vol III Issue 2" class="archive-thumb-img">
+          <span class="archive-badge">Autumn 2025</span>
+        </div>
+        <div class="archive-body">
+          <div>
+            <span class="archive-vol">Volume III • Issue 02</span>
+            <h3 class="archive-title">Empowering Young Minds Through Robotics</h3>
+            <p class="archive-meta">Published September 2025 • 20 Pages</p>
+          </div>
+          <div class="archive-actions">
+            <a href="#flipbook" class="btn-archive-read">View Issue</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 6. EDITORIAL & ABOUT SECTION -->
+  <section class="about-section" id="about">
+    <div class="about-container">
+      <div class="about-image-wrapper">
+        <img src="https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcSZVuXsRH5jIY0R-Io5fjjdx_JnWWMBPkOCyN_hC9BIM4YWDrlsc3nN0kbhhSYrVDA7EFr7dkBe_ORxTCY" alt="Students reading at Presidency Library" class="about-img">
+      </div>
+      <div class="about-content">
+        <span class="section-tag">Institutional Voice</span>
+        <h2 class="about-title">The Spirit Behind INKSPIRE</h2>
+        <p class="about-lead">"Fostering articulate thinkers, creative visionaries, and compassionate future leaders."</p>
+        <p class="about-text">INKSPIRE serves as the flagship digital publication of Presidency School Banashankari. Designed to showcase the intellectual vibrancy, artistic talent, and sports achievements of our student body, this platform bridges school traditions with modern editorial excellence.</p>
+        
+        <div class="editorial-board-box">
+          <h4 class="board-title">Student Editorial Board 2026–27</h4>
+          <p class="board-names"><strong>Editors-in-Chief:</strong> Ananya Rao (Gr XII), Rohan K. Kulkarni (Gr XII)<br>
+          <strong>Design & Layout:</strong> Senior Front-End Student Guild & Creative Arts Club<br>
+          <strong>Faculty Mentors:</strong> Academic Directorate & Department of English</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. FOOTER -->
+  <footer class="site-footer" id="contact">
+    <div class="footer-container">
+      <div class="footer-brand-col">
+        <div class="footer-logo-row">
+          <img src="https://presidencyschoolbsk.org/wp-content/uploads/2025/02/PSBSK.webp" alt="Presidency Crest" class="footer-logo-img">
+          <div>
+            <div class="footer-brand-title">INKSPIRE</div>
+            <div class="footer-brand-sub">Presidency School Banashankari</div>
+          </div>
+        </div>
+        <p class="footer-desc">The official digital publication platform committed to broadcasting scholastic excellence, creative expressiveness, and holistic student growth.</p>
+      </div>
+
+      <div>
+        <h4 class="footer-heading">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="#hero">Hero Portal</a></li>
+          <li><a href="#flipbook">Current Newsletter Edition</a></li>
+          <li><a href="#archives">Publication Archive</a></li>
+          <li><a href="https://presidencyschoolbsk.org" target="_blank" rel="noopener">Official School Website <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i></a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-heading">Campus Address</h4>
+        <div class="footer-info-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>No. 80, Hosakerehalli, 3rd Stage, Banashankari, Bengaluru, Karnataka 560085</span>
+        </div>
+        <div class="footer-info-item">
+          <i class="fa-solid fa-phone"></i>
+          <span>+91 80 2679 2000 / 2679 3000</span>
+        </div>
+        <div class="footer-info-item">
+          <i class="fa-solid fa-envelope"></i>
+          <span>inkspire@presidencyschoolbsk.org</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 Presidency School Banashankari. All Rights Reserved. INKSPIRE Digital Platform.</div>
+      <div class="social-icons">
+        <a href="#" class="social-icon-link" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" class="social-icon-link" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" class="social-icon-link" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="#" class="social-icon-link" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- DRAWER OVERLAY & INDEX DRAWER -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  
+  <aside class="toc-drawer" id="toc-drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Table of Contents</h3>
+      <button class="drawer-close" id="btn-close-toc"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <ul class="toc-list" id="toc-list-items">
+      <!-- Populated via Javascript -->
+    </ul>
+  </aside>
+
+  <!-- SEARCH MODAL -->
+  <div class="modal-container" id="search-modal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <h3 style="font-family:var(--font-display); color:var(--color-primary);">Search Issue Content</h3>
+      <button class="drawer-close" id="btn-close-search" style="color:var(--color-primary);"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <input type="text" class="search-input-box" id="search-query-input" placeholder="Search keywords e.g. Principal, Science, Sports, Art...">
+    <ul class="search-results-list" id="search-results-list">
+      <li style="color:var(--color-text-muted); font-size:0.85rem;">Type a query above to search within this edition.</li>
+    </ul>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast">PDF Download Initiated...</div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // -------------------------------------------------------------
+    // ISSUE DATA & PAGES CONTENT
+    // -------------------------------------------------------------
+    const magazinePages = [
+      // Spread 1: Cover & Page 1
+      {
+        spreadId: 1,
+        left: {
+          type: 'cover',
+          title: 'INKSPIRE',
+          vol: 'VOL. IV | ISSUE 02',
+          date: 'AUGUST 2026',
+          headline: 'Shaping Tomorrow’s Visionaries',
+          lead: 'Celebrating academic excellence, innovative STEM endeavors, and holistic leadership at Presidency School Banashankari.'
+        },
+        right: {
+          type: 'editorial',
+          tag: "Principal's Desk",
+          title: "Fostering Excellence & Courage",
+          author: "Dr. Sunita V. Sharma, Principal",
+          text: "<p>Welcome to this edition of INKSPIRE. As we traverse through another remarkable academic session, our institution continues to uphold the core values of integrity, inquiry, and intellectual resilience.</p><p>Our students have demonstrated extraordinary spirit in national science congresses, debate championships, and inter-school athletic meets. May this publication inspire every reader to seek knowledge with enthusiasm.</p>",
+          quote: "Education is not the learning of facts, but the training of the mind to think.",
+          pageNum: 1
+        }
+      },
+      // Spread 2: Pages 2 & 3
+      {
+        spreadId: 2,
+        left: {
+          type: 'article',
+          tag: "Academic Horizons",
+          title: "National Science Olympiad Winners",
+          text: "<p>Presidency Banashankari secured top honours in the National Science Olympiad 2026. Our Grade X research team presented an AI-driven water filtration model designed for local water conservation.</p><p>Under the guidance of our Department of Sciences, student researchers designed low-cost sensor arrays tested right here on our school campus.</p>",
+          img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcQvRT12S9CrnHaY-u7TQ_k4zkTc2ZH2JcvHWQcP--f1V3Rj3Wo9Mdq6QfYoTGJf31vz4ZREIoV4CSsXR3Q",
+          pageNum: 2
+        },
+        right: {
+          type: 'article',
+          tag: "Campus Innovation",
+          title: "The Robotics & AI Workshop",
+          text: "<p>Our state-of-the-art Innovation Lab hosted an intensive 3-day workshop on Autonomous Robotics and Machine Learning basics for Middle and High School students.</p><p>Participants constructed autonomous line-following rovers and programmed sensor-activated safety devices, demonstrating exceptional computational thinking.</p>",
+          img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcSZVuXsRH5jIY0R-Io5fjjdx_JnWWMBPkOCyN_hC9BIM4YWDrlsc3nN0kbhhSYrVDA7EFr7dkBe_ORxTCY",
+          pageNum: 3
+        }
+      },
+      // Spread 3: Pages 4 & 5
+      {
+        spreadId: 3,
+        left: {
+          type: 'article',
+          tag: "Cultural Symphony",
+          title: "Inter-School Drama Fest Triumph",
+          text: "<p>The Presidency School Banashankari Theatrical Troupe took home the Best Play trophy at the Regional Inter-School Cultural Fest. Their poignant original play, 'Echoes of Time', won unanimous acclaim from judges.</p><p>From original music scores to intricate stage design, the production was entirely student-led.</p>",
+          img: "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTTmxz3iyAugQOeR4cnGXzeLsO_0Vd154ZYag7CfpJHlLOvjQiT71YrV-Ut76nZRHWRhOGjrNGLqcAyPF4",
+          pageNum: 4
+        },
+        right: {
+          type: 'article',
+          tag: "Sports Arena",
+          title: "Annual Athletic Meet Champions",
+          text: "<p>Our young athletes dominated the Inter-State Track & Field Meet in Bengaluru. With 12 Gold, 8 Silver, and 5 Bronze medals, Presidency School Banashankari bagged the Overall Championship Trophy.</p><p>Special recognition goes to Master K. Aryan for breaking the 400m sprint record!</p>",
+          img: "https://presidencyschoolbsk.org/wp-content/uploads/2025/02/PSBSK.webp",
+          pageNum: 5
+        }
+      },
+      // Spread 4: Pages 6 & 7
+      {
+        spreadId: 4,
+        left: {
+          type: 'article',
+          tag: "Student Creative Corner",
+          title: "Literary Expressions & Verse",
+          text: "<p><strong>'The Canvas of Tomorrow'</strong><br><em>By Diya S., Class IX</em><br>We paint the sky with whispered dreams,<br>Beside the gentle flowing streams,<br>Where knowledge grows and courage sings,<br>And hope gives every spirit wings.</p>",
+          quote: "Poetry is the rhythmical creation of beauty in words.",
+          pageNum: 6
+        },
+        right: {
+          type: 'article',
+          tag: "Art Gallery",
+          title: "Fine Arts Exhibition Winners",
+          text: "<p>Featuring watercolor and digital art submissions from the Annual Visual Arts Showcase held in the school auditorium.</p><p>Selected student artwork will be preserved in our digital campus gallery for the academic year 2026-27.</p>",
+          img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcSZVuXsRH5jIY0R-Io5fjjdx_JnWWMBPkOCyN_hC9BIM4YWDrlsc3nN0kbhhSYrVDA7EFr7dkBe_ORxTCY",
+          pageNum: 7
+        }
+      },
+      // Spread 5: Pages 8 & Back Cover
+      {
+        spreadId: 5,
+        left: {
+          type: 'article',
+          tag: "Alumni Spotlight",
+          title: "In Conversation with Dr. Arvind R.",
+          text: "<p>Class of 2014 Alumnus Dr. Arvind R., now a Senior Aerospace Researcher, visited our campus for an interactive mentoring session with senior students.</p><p>'The strong foundation in ethics and critical thinking I received at Presidency Banashankari shaped my trajectory in science,' he noted during his key address.</p>",
+          pageNum: 8
+        },
+        right: {
+          type: 'backcover',
+          title: 'INKSPIRE',
+          subtitle: 'Presidency School Banashankari',
+          text: 'Thank you for reading the official digital newsletter. Stay connected with our institutional journey.',
+          contact: 'www.presidencyschoolbsk.org',
+          pageNum: 9
+        }
+      }
+    ];
+
+    const tableOfContentsData = [
+      { title: "Principal's Address", desc: "Fostering Excellence & Courage", page: 1 },
+      { title: "National Science Olympiad", desc: "AI-Driven Water Conservation Project", page: 2 },
+      { title: "Robotics & AI Workshop", desc: "Hands-on engineering in our Innovation Lab", page: 3 },
+      { title: "Inter-School Drama Victory", desc: "First prize at Regional Cultural Fest", page: 4 },
+      { title: "Annual Athletic Champions", desc: "Overall Trophy at Track & Field Meet", page: 5 },
+      { title: "Student Creative Corner", desc: "Award-winning poems and essays", page: 6 },
+      { title: "Fine Arts Exhibition", desc: "Student visual art showcase", page: 7 },
+      { title: "Alumni Spotlight", desc: "Mentorship session with Dr. Arvind R.", page: 8 }
+    ];
+
+    // -------------------------------------------------------------
+    // STATE MANAGEMENT
+    // -------------------------------------------------------------
+    let currentSpreadIndex = 0;
+    let zoomLevel = 1;
+
+    // DOM Elements
+    const loaderScreen = document.getElementById('loading-screen');
+    const loaderBar = document.getElementById('loader-bar');
+    const loaderStatus = document.getElementById('loader-status');
+    const leftPage = document.getElementById('left-page-content');
+    const rightPage = document.getElementById('right-page-content');
+    const pageIndicator = document.getElementById('page-indicator-text');
+    const prevBtn = document.getElementById('btn-prev-page');
+    const nextBtn = document.getElementById('btn-next-page');
+    const rangeSlider = document.getElementById('page-range-slider');
+    const bookElement = document.getElementById('book-element');
+    const drawerOverlay = document.getElementById('drawer-overlay');
+    const tocDrawer = document.getElementById('toc-drawer');
+    const tocListItems = document.getElementById('toc-list-items');
+    const searchModal = document.getElementById('search-modal');
+    const searchInput = document.getElementById('search-query-input');
+    const searchResults = document.getElementById('search-results-list');
+    const toast = document.getElementById('toast');
+
+    // -------------------------------------------------------------
+    // INITIALIZATION & SIMULATED PRELOADER
+    // -------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 20;
+        loaderBar.style.width = progress + '%';
+        if (progress === 40) loaderStatus.textContent = 'Rendering High-Res Typography...';
+        if (progress === 80) loaderStatus.textContent = 'Preparing Flipbook Reader...';
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            loaderScreen.style.opacity = '0';
+            loaderScreen.style.visibility = 'hidden';
+          }, 400);
+        }
+      }, 150);
+
+      renderSpread(0);
+      populateTOC();
+    });
+
+    // -------------------------------------------------------------
+    // RENDER SPREAD
+    // -------------------------------------------------------------
+    function renderSpread(index) {
+      if (index < 0 || index >= magazinePages.length) return;
+      currentSpreadIndex = index;
+      const spread = magazinePages[index];
+
+      // Render Left Page
+      leftPage.innerHTML = buildPageHTML(spread.left, 'left');
+      
+      // Render Right Page
+      rightPage.innerHTML = buildPageHTML(spread.right, 'right');
+
+      // Update Controls
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === magazinePages.length - 1;
+      rangeSlider.value = index + 1;
+
+      const pageStart = index === 0 ? 'Cover' : `Page ${spread.left.pageNum}`;
+      const pageEnd = spread.right.type === 'backcover' ? 'Back Cover' : `Page ${spread.right.pageNum}`;
+      pageIndicator.textContent = `${pageStart} – ${pageEnd} of 9`;
+    }
+
+    function buildPageHTML(data, side) {
+      const spineShadow = `<div class="page-spine-shadow"></div>`;
+      
+      if (data.type === 'cover') {
+        return `
+          ${spineShadow}
+          <div class="cover-spread">
+            <div class="cover-header">
+              <div>
+                <span class="cover-feature-badge">Official Edition</span>
+                <div style="font-family:var(--font-sans-accent); font-size:0.75rem; margin-top:6px; color:var(--color-accent-gold-light);">${data.vol}</div>
+              </div>
+              <img src="https://presidencyschoolbsk.org/wp-content/uploads/2025/02/PSBSK.webp" alt="Logo" style="height:36px; filter:brightness(0) invert(1);">
+            </div>
+            <div class="cover-hero-box">
+              <h1 class="cover-main-title">${data.title}</h1>
+              <h2 class="cover-headline">${data.headline}</h2>
+              <p class="cover-lead">${data.lead}</p>
+            </div>
+            <div class="cover-footer">
+              <span>Presidency School Banashankari</span>
+              <span>${data.date}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      if (data.type === 'backcover') {
+        return `
+          ${spineShadow}
+          <div class="cover-spread" style="text-align:center; justify-content:center; align-items:center;">
+            <img src="https://presidencyschoolbsk.org/wp-content/uploads/2025/02/PSBSK.webp" alt="Logo" style="height:60px; filter:brightness(0) invert(1); margin-bottom:1.5rem;">
+            <h2 style="font-family:var(--font-display); font-size:2.5rem; color:var(--color-surface);">${data.title}</h2>
+            <p style="font-family:var(--font-sans-accent); color:var(--color-accent-gold); text-transform:uppercase; font-size:0.8rem; letter-spacing:2px; margin-bottom:1.5rem;">${data.subtitle}</p>
+            <p style="font-size:0.9rem; color:rgba(255,255,255,0.7); max-width:80%; line-height:1.6; margin-bottom:2rem;">${data.text}</p>
+            <div style="font-family:var(--font-sans-accent); font-size:0.8rem; color:var(--color-accent-gold-light);">${data.contact}</div>
+          </div>
+        `;
+      }
+
+      return `
+        ${spineShadow}
+        <div>
+          ${data.tag ? `<div class="page-header-tag">${data.tag}</div>` : ''}
+          <h3 class="page-editorial-title">${data.title || ''}</h3>
+          ${data.author ? `<div style="font-family:var(--font-heading); font-style:italic; font-size:1rem; color:var(--color-primary-light); margin-bottom:0.75rem;">By ${data.author}</div>` : ''}
+          ${data.img ? `<div class="page-img-frame"><img src="${data.img}" alt="Article image"></div>` : ''}
+          <div class="page-article-text">${data.text || ''}</div>
+          ${data.quote ? `<div class="page-quote-box">"${data.quote}"</div>` : ''}
+        </div>
+        <div class="page-number">
+          <span>INKSPIRE Newsletter</span>
+          <span>Page ${data.pageNum}</span>
+        </div>
+      `;
+    }
+
+    // -------------------------------------------------------------
+    // FLIPBOOK CONTROLS & NAV
+    // -------------------------------------------------------------
+    prevBtn.addEventListener('click', () => {
+      if (currentSpreadIndex > 0) renderSpread(currentSpreadIndex - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSpreadIndex < magazinePages.length - 1) renderSpread(currentSpreadIndex + 1);
+    });
+
+    rangeSlider.addEventListener('input', (e) => {
+      renderSpread(parseInt(e.target.value) - 1);
+    });
+
+    // Keyboard Arrow Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && currentSpreadIndex > 0) {
+        renderSpread(currentSpreadIndex - 1);
+      } else if (e.key === 'ArrowRight' && currentSpreadIndex < magazinePages.length - 1) {
+        renderSpread(currentSpreadIndex + 1);
+      } else if (e.key === 'Escape') {
+        closeDrawers();
+      }
+    });
+
+    // Zoom Controls
+    document.getElementById('tool-zoom-in').addEventListener('click', () => {
+      if (zoomLevel < 1.3) {
+        zoomLevel += 0.15;
+        bookElement.style.transform = `scale(${zoomLevel})`;
+      }
+    });
+
+    document.getElementById('tool-zoom-out').addEventListener('click', () => {
+      if (zoomLevel > 0.85) {
+        zoomLevel -= 0.15;
+        bookElement.style.transform = `scale(${zoomLevel})`;
+      }
+    });
+
+    // Fullscreen Toggle
+    document.getElementById('tool-fullscreen').addEventListener('click', () => {
+      const stage = document.getElementById('flipbook-stage');
+      if (!document.fullscreenElement) {
+        stage.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // PDF Download Simulation
+    document.getElementById('tool-download').addEventListener('click', () => {
+      showToast('Downloading Official INKSPIRE Vol. IV Issue 2 PDF...');
+    });
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // -------------------------------------------------------------
+    // TABLE OF CONTENTS DRAWER
+    // -------------------------------------------------------------
+    function populateTOC() {
+      tocListItems.innerHTML = tableOfContentsData.map((item) => `
+        <li class="toc-item" onclick="jumpToPage(${item.page})">
+          <div>
+            <div class="toc-item-title">${item.title}</div>
+            <div class="toc-item-sub">${item.desc}</div>
+          </div>
+          <span class="toc-page-num">p. ${item.page}</span>
+        </li>
+      `).join('');
+    }
+
+    function jumpToPage(pageNum) {
+      // Find spread containing pageNum
+      let targetSpreadIndex = 0;
+      magazinePages.forEach((spread, i) => {
+        if (spread.left.pageNum === pageNum || spread.right.pageNum === pageNum) {
+          targetSpreadIndex = i;
+        }
+      });
+      renderSpread(targetSpreadIndex);
+      closeDrawers();
+      document.getElementById('flipbook').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.getElementById('btn-open-toc').addEventListener('click', openTOC);
+    document.getElementById('tool-toc-btn').addEventListener('click', openTOC);
+    document.getElementById('btn-close-toc').addEventListener('click', closeDrawers);
+    drawerOverlay.addEventListener('click', closeDrawers);
+
+    function openTOC() {
+      drawerOverlay.classList.add('active');
+      tocDrawer.classList.add('active');
+    }
+
+    function closeDrawers() {
+      drawerOverlay.classList.remove('active');
+      tocDrawer.classList.remove('active');
+      searchModal.classList.remove('active');
+    }
+
+    // -------------------------------------------------------------
+    // SEARCH MODAL LOGIC
+    // -------------------------------------------------------------
+    document.getElementById('btn-open-search').addEventListener('click', () => {
+      drawerOverlay.classList.add('active');
+      searchModal.classList.add('active');
+      searchInput.focus();
+    });
+
+    document.getElementById('btn-close-search').addEventListener('click', closeDrawers);
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (!query) {
+        searchResults.innerHTML = '<li style="color:var(--color-text-muted); font-size:0.85rem;">Type a query above to search within this edition.</li>';
+        return;
+      }
+
+      const matches = tableOfContentsData.filter(item => 
+        item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)
+      );
+
+      if (matches.length === 0) {
+        searchResults.innerHTML = '<li style="color:var(--color-text-muted); font-size:0.85rem;">No matching articles found.</li>';
+      } else {
+        searchResults.innerHTML = matches.map(item => `
+          <li class="toc-item" onclick="jumpToPage(${item.page})">
+            <div>
+              <div class="toc-item-title">${item.title}</div>
+              <div class="toc-item-sub">${item.desc}</div>
+            </div>
+            <span class="toc-page-num">Page ${item.page}</span>
+          </li>
+        `).join('');
+      }
+    });
+  </script>
+</body>
+</html>
