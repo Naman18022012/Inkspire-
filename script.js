@@ -31,7 +31,7 @@ const magazineSpreads = [
       tag: "Academic Horizons",
       title: "National Science Olympiad Winners",
       text: "<p>Presidency Banashankari secured top honours in the National Science Olympiad 2026. Our Grade X research team presented an AI-driven water filtration model designed for local water conservation.</p><p>Under the guidance of our Department of Sciences, student researchers designed low-cost sensor arrays tested right here on our school campus.</p>",
-      img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcQvRT12S9CrnHaY-u7TQ_k4zkTc2ZH2JcvHWQcP--f1V3Rj3Wo9Mdq6QfYoTGJf31vz4ZREIoV4CSsXR3Q",
+      img: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop",
       pageNum: 2
     },
     right: {
@@ -39,7 +39,7 @@ const magazineSpreads = [
       tag: "Campus Innovation",
       title: "The Robotics & AI Workshop",
       text: "<p>Our state-of-the-art Innovation Lab hosted an intensive 3-day workshop on Autonomous Robotics and Machine Learning basics for Middle and High School students.</p><p>Participants constructed autonomous line-following rovers and programmed sensor-activated safety devices, demonstrating exceptional computational thinking.</p>",
-      img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcSZVuXsRH5jIY0R-Io5fjjdx_JnWWMBPkOCyN_hC9BIM4YWDrlsc3nN0kbhhSYrVDA7EFr7dkBe_ORxTCY",
+      img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800&auto=format&fit=crop",
       pageNum: 3
     }
   },
@@ -50,7 +50,7 @@ const magazineSpreads = [
       tag: "Cultural Symphony",
       title: "Inter-School Drama Victory",
       text: "<p>The Presidency School Banashankari Theatrical Troupe took home the Best Play trophy at the Regional Inter-School Cultural Fest. Their poignant original play, 'Echoes of Time', won unanimous acclaim from judges.</p><p>From original music scores to intricate stage design, the production was entirely student-led.</p>",
-      img: "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTTmxz3iyAugQOeR4cnGXzeLsO_0Vd154ZYag7CfpJHlLOvjQiT71YrV-Ut76nZRHWRhOGjrNGLqcAyPF4",
+      img: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=800&auto=format&fit=crop",
       pageNum: 4
     },
     right: {
@@ -58,7 +58,7 @@ const magazineSpreads = [
       tag: "Sports Arena",
       title: "Annual Athletic Champions",
       text: "<p>Our young athletes dominated the Inter-State Track & Field Meet in Bengaluru. With 12 Gold, 8 Silver, and 5 Bronze medals, Presidency School Banashankari bagged the Overall Championship Trophy.</p><p>Special recognition goes to Master K. Aryan for breaking the 400m sprint record!</p>",
-      img: "https://presidencyschoolbsk.org/wp-content/uploads/2025/02/PSBSK.webp",
+      img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop",
       pageNum: 5
     }
   },
@@ -190,7 +190,7 @@ function renderPageContent(data) {
   `;
 }
 
-// 5. REAL 3D PAGE FLIP ANIMATION ENGINE
+// 5. 3D PAGE FLIP ANIMATION ENGINE
 function turnPage(direction) {
   if (isAnimating) return;
 
@@ -198,7 +198,6 @@ function turnPage(direction) {
     isAnimating = true;
     const targetSpread = currentSpread + 1;
 
-    // Create 3D animated flipper leaf
     const flipper = document.createElement('div');
     flipper.className = 'page-flipper flip-left';
 
@@ -207,7 +206,6 @@ function turnPage(direction) {
       <div class="flipper-face back">${renderPageContent(magazineSpreads[targetSpread].left)}</div>
     `;
 
-    // Pre-render new target right page on base
     baseRight.innerHTML = renderPageContent(magazineSpreads[targetSpread].right);
     bookElement.appendChild(flipper);
 
@@ -223,7 +221,6 @@ function turnPage(direction) {
     isAnimating = true;
     const targetSpread = currentSpread - 1;
 
-    // Create 3D animated flipper leaf
     const flipper = document.createElement('div');
     flipper.className = 'page-flipper flip-right';
 
@@ -232,7 +229,6 @@ function turnPage(direction) {
       <div class="flipper-face back">${renderPageContent(magazineSpreads[targetSpread].right)}</div>
     `;
 
-    // Pre-render new target left page on base
     baseLeft.innerHTML = renderPageContent(magazineSpreads[targetSpread].left);
     bookElement.appendChild(flipper);
 
@@ -286,7 +282,10 @@ function jumpToPage(pageNum) {
 
 function setupEventListeners() {
   if (prevBtn) prevBtn.addEventListener('click', () => turnPage('prev'));
-  if (nextBtn) nextBtn.disabled = false; nextBtn.addEventListener('click', () => turnPage('next'));
+  if (nextBtn) {
+    nextBtn.disabled = false;
+    nextBtn.addEventListener('click', () => turnPage('next'));
+  }
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') turnPage('prev');
