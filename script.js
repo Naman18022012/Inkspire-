@@ -1,311 +1,310 @@
 /**
- * INKSPIRE - Official 3D Interactive Magazine Engine
- * Presidency School Banashankari
+ * INKSPIRE - Core Flipbook Engine & PDF Integration
+ * Dependencies: PDF.js (v3.11+), PageFlip.js (StPageFlip v2.x), config.js
  */
 
-// 1. MAGAZINE CONTENT DATA
-const magazineSpreads = [
-  {
-    spreadId: 0,
-    left: {
-      type: 'cover',
-      vol: 'VOL. IV | ISSUE 02',
-      date: 'AUGUST 2026',
-      title: 'INKSPIRE',
-      headline: 'Shaping Tomorrow’s Visionaries',
-      lead: 'Official Digital Newsletter of Presidency School Banashankari, celebrating academic excellence, creative arts, and campus innovation.'
-    },
-    right: {
-      type: 'editorial',
-      tag: "Principal's Desk",
-      title: "Fostering Excellence & Courage",
-      author: "Dr. Sunita V. Sharma, Principal",
-      text: "<p>Welcome to this edition of INKSPIRE. As we traverse through another remarkable academic session, our institution continues to uphold the core values of integrity, inquiry, and intellectual resilience.</p><p>Our students have demonstrated extraordinary spirit in national science congresses, debate championships, and inter-school athletic meets. May this publication inspire every reader.</p>",
-      pageNum: 1
-    }
-  },
-  {
-    spreadId: 1,
-    left: {
-      type: 'article',
-      tag: "Academic Horizons",
-      title: "National Science Olympiad Winners",
-      text: "<p>Presidency Banashankari secured top honours in the National Science Olympiad 2026. Our Grade X research team presented an AI-driven water filtration model designed for local water conservation.</p><p>Under the guidance of our Department of Sciences, student researchers designed low-cost sensor arrays tested right here on our school campus.</p>",
-      img: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop",
-      pageNum: 2
-    },
-    right: {
-      type: 'article',
-      tag: "Campus Innovation",
-      title: "The Robotics & AI Workshop",
-      text: "<p>Our state-of-the-art Innovation Lab hosted an intensive 3-day workshop on Autonomous Robotics and Machine Learning basics for Middle and High School students.</p><p>Participants constructed autonomous line-following rovers and programmed sensor-activated safety devices, demonstrating exceptional computational thinking.</p>",
-      img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800&auto=format&fit=crop",
-      pageNum: 3
-    }
-  },
-  {
-    spreadId: 2,
-    left: {
-      type: 'article',
-      tag: "Cultural Symphony",
-      title: "Inter-School Drama Victory",
-      text: "<p>The Presidency School Banashankari Theatrical Troupe took home the Best Play trophy at the Regional Inter-School Cultural Fest. Their poignant original play, 'Echoes of Time', won unanimous acclaim from judges.</p><p>From original music scores to intricate stage design, the production was entirely student-led.</p>",
-      img: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=800&auto=format&fit=crop",
-      pageNum: 4
-    },
-    right: {
-      type: 'article',
-      tag: "Sports Arena",
-      title: "Annual Athletic Champions",
-      text: "<p>Our young athletes dominated the Inter-State Track & Field Meet in Bengaluru. With 12 Gold, 8 Silver, and 5 Bronze medals, Presidency School Banashankari bagged the Overall Championship Trophy.</p><p>Special recognition goes to Master K. Aryan for breaking the 400m sprint record!</p>",
-      img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop",
-      pageNum: 5
-    }
-  },
-  {
-    spreadId: 3,
-    left: {
-      type: 'article',
-      tag: "Creative Corner",
-      title: "The Canvas of Tomorrow",
-      text: "<p><em>By Diya S., Class IX</em></p><p>We paint the sky with whispered dreams,<br>Beside the gentle flowing streams,<br>Where knowledge grows and courage sings,<br>And hope gives every spirit wings.</p>",
-      pageNum: 6
-    },
-    right: {
-      type: 'backcover',
-      title: 'INKSPIRE',
-      subtitle: 'Presidency School Banashankari',
-      text: 'Thank you for reading the official digital newsletter. Stay connected with our institutional journey.',
-      contact: 'www.presidencyschoolbsk.org',
-      pageNum: 7
-    }
-  }
-];
+// Configure PDF.js Worker
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
 
-// Table of Contents Reference
-const tocData = [
-  { title: "Principal's Address", page: 1 },
-  { title: "National Science Olympiad", page: 2 },
-  { title: "Robotics & AI Workshop", page: 3 },
-  { title: "Inter-School Drama Victory", page: 4 },
-  { title: "Annual Athletic Champions", page: 5 },
-  { title: "Creative Corner", page: 6 }
-];
+let pdfDoc = null;
+let pageFlip = null;
+let currentZoom = 1;
+const ZOOM_STEP = 0.2;
+const MAX_ZOOM = 2.0;
+const MIN_ZOOM = 0.8;
 
-// 2. STATE MANAGEMENT
-let currentSpread = 0;
-let isAnimating = false;
-
-// DOM Elements
-let baseLeft, baseRight, bookElement, prevBtn, nextBtn, counterEl, loader, loaderBar, drawerOverlay, tocDrawer, tocList;
-
-// 3. INITIALIZATION
-document.addEventListener('DOMContentLoaded', () => {
-  baseLeft = document.getElementById('page-base-left');
-  baseRight = document.getElementById('page-base-right');
-  bookElement = document.getElementById('magazine-book');
-  prevBtn = document.getElementById('btn-prev');
-  nextBtn = document.getElementById('btn-next');
-  counterEl = document.getElementById('page-counter-text');
-  loader = document.getElementById('loading-screen');
-  loaderBar = document.getElementById('loader-bar-fill');
-  drawerOverlay = document.getElementById('drawer-overlay');
-  tocDrawer = document.getElementById('toc-drawer');
-  tocList = document.getElementById('toc-list-items');
-
-  // Preloader Animation
-  let progress = 0;
-  const loadInterval = setInterval(() => {
-    progress += 25;
-    if (loaderBar) loaderBar.style.width = progress + '%';
-    if (progress >= 100) {
-      clearInterval(loadInterval);
-      setTimeout(() => {
-        if (loader) {
-          loader.style.opacity = '0';
-          loader.style.visibility = 'hidden';
-        }
-      }, 300);
-    }
-  }, 100);
-
-  renderBaseSpread(0);
-  populateTOC();
-  setupEventListeners();
+document.addEventListener("DOMContentLoaded", () => {
+  initConfiguration();
+  setupUIEventListeners();
+  loadPublication();
 });
 
-// 4. RENDER STATIC BASE PAGES
-function renderBaseSpread(index) {
-  const spread = magazineSpreads[index];
-  baseLeft.innerHTML = renderPageContent(spread.left);
-  baseRight.innerHTML = renderPageContent(spread.right);
-  
-  currentSpread = index;
-  updateControls();
+/* Bind config metadata to DOM */
+function initConfiguration() {
+  if (typeof MAGAZINE_CONFIG === "undefined") return;
+
+  const cfgMap = {
+    "cfg-loader-school": MAGAZINE_CONFIG.schoolName,
+    "cfg-loader-title": MAGAZINE_CONFIG.title,
+    "cfg-landing-school": MAGAZINE_CONFIG.schoolName,
+    "cfg-landing-title": MAGAZINE_CONFIG.title,
+    "cfg-landing-subtitle": MAGAZINE_CONFIG.subTitle,
+    "cfg-landing-volume": MAGAZINE_CONFIG.volume,
+    "cfg-landing-date": MAGAZINE_CONFIG.issueDate,
+    "cfg-landing-tagline": MAGAZINE_CONFIG.tagline,
+    "cfg-cover-vol": MAGAZINE_CONFIG.volume,
+    "cfg-topbar-school": MAGAZINE_CONFIG.schoolName,
+    "cfg-topbar-title": MAGAZINE_CONFIG.title,
+  };
+
+  Object.entries(cfgMap).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  });
 }
 
-function renderPageContent(data) {
-  if (data.type === 'cover') {
-    return `
-      <div class="cover-inner">
-        <div>
-          <span class="edition-badge">${data.vol}</span>
-          <div style="font-family:var(--font-accent); font-size:0.75rem; color:var(--color-accent-gold-light); margin-top:4px;">${data.date}</div>
-        </div>
-        <div>
-          <h1 class="cover-title">${data.title}</h1>
-          <h2 class="cover-headline">${data.headline}</h2>
-          <p class="cover-lead">${data.lead}</p>
-        </div>
-        <div style="font-family:var(--font-accent); font-size:0.75rem; color:rgba(255,255,255,0.6);">Presidency School Banashankari</div>
-      </div>
-    `;
-  }
+/* Load PDF & Render Canvas Pages into PageFlip Engine */
+async function loadPublication() {
+  const progressBar = document.getElementById("progress-bar");
+  const loader = document.getElementById("loader");
+  const pdfUrl = MAGAZINE_CONFIG?.pdfUrl || "pdf/inkspire.pdf";
 
-  if (data.type === 'backcover') {
-    return `
-      <div class="cover-inner" style="text-align:center; justify-content:center; align-items:center;">
-        <h2 style="font-family:var(--font-display); font-size:2.5rem; color:#FFF;">${data.title}</h2>
-        <p style="font-family:var(--font-accent); color:var(--color-accent-gold); font-size:0.8rem; letter-spacing:2px; margin-bottom:1.5rem;">${data.subtitle}</p>
-        <p style="font-size:0.9rem; color:rgba(255,255,255,0.8); margin-bottom:2rem;">${data.text}</p>
-        <div style="font-family:var(--font-accent); font-size:0.8rem; color:var(--color-accent-gold-light);">${data.contact}</div>
-      </div>
-    `;
-  }
+  try {
+    // 1. Fetch PDF Document
+    const loadingTask = pdfjsLib.getDocument(pdfUrl);
+    loadingTask.onProgress = (progressData) => {
+      if (progressData.total > 0) {
+        const percent = Math.round((progressData.loaded / progressData.total) * 100);
+        if (progressBar) progressBar.style.width = `${percent}%`;
+      }
+    };
 
-  return `
-    <div class="page-inner">
-      <div>
-        ${data.tag ? `<div class="page-tag">${data.tag}</div>` : ''}
-        <h3 class="page-title">${data.title}</h3>
-        ${data.author ? `<div style="font-family:var(--font-heading); font-style:italic; font-size:0.95rem; color:var(--color-primary-light); margin-bottom:0.75rem;">By ${data.author}</div>` : ''}
-        ${data.img ? `<div class="page-image-frame"><img src="${data.img}" alt="Article image"></div>` : ''}
-        <div class="page-body">${data.text}</div>
-      </div>
-      <div class="page-footer-bar">
-        <span>INKSPIRE Publication</span>
-        <span>Page ${data.pageNum}</span>
-      </div>
-    </div>
+    pdfDoc = await loadingTask.promise;
+    const totalPages = pdfDoc.numPages;
+    const bookContainer = document.getElementById("book");
+    bookContainer.innerHTML = "";
+
+    // 2. Initialize PageFlip Instance
+    pageFlip = new St.PageFlip(bookContainer, {
+      width: 550,           // Base page width
+      height: 733,          // Base page height (4:3 aspect ratio)
+      size: "stretch",
+      minWidth: 320,
+      maxWidth: 900,
+      minHeight: 420,
+      maxHeight: 1200,
+      maxShadowOpacity: 0.4,
+      showCover: true,
+      mobileScrollSupport: false,
+      useMouseEvents: true,
+      flippingTime: 900,
+    });
+
+    // 3. Render Canvas for Each Page
+    const pageElements = [];
+    const tocGrid = document.getElementById("toc-grid");
+    if (tocGrid) tocGrid.innerHTML = "";
+
+    for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+      const pageWrapper = document.createElement("div");
+      pageWrapper.className = "page";
+      
+      const canvas = document.createElement("canvas");
+      pageWrapper.appendChild(canvas);
+      bookContainer.appendChild(pageWrapper);
+      pageElements.push(pageWrapper);
+
+      // Render high-DPI page
+      await renderPdfPage(pageNum, canvas);
+
+      // Build Table of Contents Thumbnail Grid
+      createTocThumbnail(pageNum, canvas.toDataURL("image/jpeg", 0.7));
+    }
+
+    // 4. Mount Rendered HTML Pages into Flipbook Engine
+    pageFlip.loadFromHTML(document.querySelectorAll("#book .page"));
+
+    // Sync Page Indicators
+    updatePageCounter(1, totalPages);
+
+    // PageFlip Event Hooks
+    pageFlip.on("flip", (e) => {
+      const currentPage = e.data + 1;
+      updatePageCounter(currentPage, totalPages);
+    });
+
+    // 5. Dismiss Loading Screen with Fade Effect
+    if (progressBar) progressBar.style.width = "100%";
+    setTimeout(() => {
+      loader.style.opacity = "0";
+      setTimeout(() => loader.classList.add("hidden"), 600);
+    }, 400);
+
+  } catch (error) {
+    console.error("Error initializing magazine reader:", error);
+    const loaderText = document.querySelector(".loader-text");
+    if (loaderText) loaderText.textContent = "Unable to load magazine PDF.";
+  }
+}
+
+/* Render PDF Page onto Canvas with DPI Scaling */
+async function renderPdfPage(pageNum, canvas) {
+  const page = await pdfDoc.getPage(pageNum);
+  const pixelRatio = window.devicePixelRatio || 1.5;
+  const viewport = page.getViewport({ scale: 1.5 * pixelRatio });
+
+  const context = canvas.getContext("2d");
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+
+  const renderContext = {
+    canvasContext: context,
+    viewport: viewport,
+  };
+
+  await page.render(renderContext).promise;
+}
+
+/* Build TOC Dynamic Cards */
+function createTocThumbnail(pageNum, imageSrc) {
+  const tocGrid = document.getElementById("toc-grid");
+  if (!tocGrid) return;
+
+  const card = document.createElement("div");
+  card.className = "toc-card";
+  card.innerHTML = `
+    <img class="toc-thumbnail" src="${imageSrc}" alt="Page ${pageNum}" />
+    <span class="toc-page-label">Page ${pageNum}</span>
   `;
+
+  card.addEventListener("click", () => {
+    pageFlip.flip(pageNum - 1); // PageFlip uses 0-based indexing
+    document.getElementById("toc-modal")?.classList.add("hidden");
+  });
+
+  tocGrid.appendChild(card);
 }
 
-// 5. 3D PAGE FLIP ANIMATION ENGINE
-function turnPage(direction) {
-  if (isAnimating) return;
+/* Sync Top Bar Counter */
+function updatePageCounter(currentPage, totalPages) {
+  const currentEl = document.getElementById("current-page-num");
+  const totalEl = document.getElementById("total-pages-num");
 
-  if (direction === 'next' && currentSpread < magazineSpreads.length - 1) {
-    isAnimating = true;
-    const targetSpread = currentSpread + 1;
-
-    const flipper = document.createElement('div');
-    flipper.className = 'page-flipper flip-left';
-
-    flipper.innerHTML = `
-      <div class="flipper-face front">${baseRight.innerHTML}</div>
-      <div class="flipper-face back">${renderPageContent(magazineSpreads[targetSpread].left)}</div>
-    `;
-
-    baseRight.innerHTML = renderPageContent(magazineSpreads[targetSpread].right);
-    bookElement.appendChild(flipper);
-
-    flipper.addEventListener('animationend', () => {
-      baseLeft.innerHTML = renderPageContent(magazineSpreads[targetSpread].left);
-      flipper.remove();
-      currentSpread = targetSpread;
-      updateControls();
-      isAnimating = false;
-    });
-
-  } else if (direction === 'prev' && currentSpread > 0) {
-    isAnimating = true;
-    const targetSpread = currentSpread - 1;
-
-    const flipper = document.createElement('div');
-    flipper.className = 'page-flipper flip-right';
-
-    flipper.innerHTML = `
-      <div class="flipper-face front">${baseLeft.innerHTML}</div>
-      <div class="flipper-face back">${renderPageContent(magazineSpreads[targetSpread].right)}</div>
-    `;
-
-    baseLeft.innerHTML = renderPageContent(magazineSpreads[targetSpread].left);
-    bookElement.appendChild(flipper);
-
-    flipper.addEventListener('animationend', () => {
-      baseRight.innerHTML = renderPageContent(magazineSpreads[targetSpread].right);
-      flipper.remove();
-      currentSpread = targetSpread;
-      updateControls();
-      isAnimating = false;
-    });
-  }
+  if (currentEl) currentEl.textContent = currentPage;
+  if (totalEl) totalEl.textContent = totalPages;
 }
 
-// Update UI Buttons and Page Number Counter
-function updateControls() {
-  if (prevBtn) prevBtn.disabled = currentSpread === 0;
-  if (nextBtn) nextBtn.disabled = currentSpread === magazineSpreads.length - 1;
-  
-  if (counterEl) {
-    if (currentSpread === 0) {
-      counterEl.textContent = 'Cover Spread';
+/* UI Controls & Event Handling */
+function setupUIEventListeners() {
+  const landingPage = document.getElementById("landing-page");
+  const readerInterface = document.getElementById("reader-interface");
+  const tocModal = document.getElementById("toc-modal");
+  const searchModal = document.getElementById("search-modal");
+  const stage = document.getElementById("flipbook-stage");
+
+  // Navigation Arrows
+  document.getElementById("btn-prev-page")?.addEventListener("click", () => pageFlip?.flipPrev());
+  document.getElementById("btn-next-page")?.addEventListener("click", () => pageFlip?.flipNext());
+
+  // Landing Page Buttons
+  document.getElementById("btn-open-magazine")?.addEventListener("click", () => {
+    landingPage.classList.add("hidden");
+    readerInterface.classList.remove("hidden");
+    window.dispatchEvent(new Event("resize"));
+  });
+
+  document.getElementById("btn-browse-contents")?.addEventListener("click", () => {
+    landingPage.classList.add("hidden");
+    readerInterface.classList.remove("hidden");
+    tocModal.classList.remove("hidden");
+    window.dispatchEvent(new Event("resize"));
+  });
+
+  document.getElementById("btn-back-home")?.addEventListener("click", () => {
+    readerInterface.classList.add("hidden");
+    landingPage.classList.remove("hidden");
+  });
+
+  // Modal Controls
+  document.getElementById("btn-toggle-toc")?.addEventListener("click", () => tocModal.classList.toggle("hidden"));
+  document.getElementById("btn-close-toc")?.addEventListener("click", () => tocModal.classList.add("hidden"));
+  document.getElementById("btn-toggle-search")?.addEventListener("click", () => searchModal.classList.toggle("hidden"));
+  document.getElementById("btn-close-search")?.addEventListener("click", () => searchModal.classList.add("hidden"));
+
+  // Zoom Controls
+  document.getElementById("btn-zoom-in")?.addEventListener("click", () => {
+    if (currentZoom < MAX_ZOOM) {
+      currentZoom += ZOOM_STEP;
+      if (stage) stage.style.transform = `scale(${currentZoom})`;
+    }
+  });
+
+  document.getElementById("btn-zoom-out")?.addEventListener("click", () => {
+    if (currentZoom > MIN_ZOOM) {
+      currentZoom -= ZOOM_STEP;
+      if (stage) stage.style.transform = `scale(${currentZoom})`;
+    }
+  });
+
+  // Native Fullscreen Toggle
+  document.getElementById("btn-fullscreen")?.addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => console.error(err));
     } else {
-      const leftNum = magazineSpreads[currentSpread].left.pageNum;
-      const rightNum = magazineSpreads[currentSpread].right.pageNum;
-      counterEl.textContent = `Pages ${leftNum} – ${rightNum || 'End'}`;
-    }
-  }
-}
-
-// 6. TOC & NAVIGATION HELPERS
-function populateTOC() {
-  if (!tocList) return;
-  tocList.innerHTML = tocData.map(item => `
-    <li class="toc-item" onclick="jumpToPage(${item.page})">
-      <span style="font-family:var(--font-accent); font-weight:700; font-size:0.9rem; color:var(--color-primary);">${item.title}</span>
-      <span style="font-family:var(--font-display); font-weight:700; color:var(--color-accent-gold);">p. ${item.page}</span>
-    </li>
-  `).join('');
-}
-
-function jumpToPage(pageNum) {
-  let targetIndex = 0;
-  magazineSpreads.forEach((s, idx) => {
-    if (s.left.pageNum === pageNum || s.right.pageNum === pageNum) {
-      targetIndex = idx;
+      document.exitFullscreen();
     }
   });
-  renderBaseSpread(targetIndex);
-  closeDrawers();
+
+  // Keyboard Shortcuts Navigation
+  document.addEventListener("keydown", (e) => {
+    if (readerInterface.classList.contains("hidden")) return;
+    if (e.key === "ArrowRight") pageFlip?.flipNext();
+    if (e.key === "ArrowLeft") pageFlip?.flipPrev();
+    if (e.key === "Escape") {
+      tocModal.classList.add("hidden");
+      searchModal.classList.add("hidden");
+    }
+  });
+
+  // Search Input Query Handler
+  const searchInput = document.getElementById("search-input");
+  searchInput?.addEventListener("input", (e) => {
+    performTextSearch(e.target.value.trim());
+  });
 }
 
-function setupEventListeners() {
-  if (prevBtn) prevBtn.addEventListener('click', () => turnPage('prev'));
-  if (nextBtn) {
-    nextBtn.disabled = false;
-    nextBtn.addEventListener('click', () => turnPage('next'));
+/* PDF.js Text Search Functionality */
+async function performTextSearch(query) {
+  const resultsContainer = document.getElementById("search-results-list");
+  if (!resultsContainer) return;
+
+  if (!query || query.length < 2) {
+    resultsContainer.innerHTML = '<div class="search-empty-state">Enter keywords above to query the document.</div>';
+    return;
   }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') turnPage('prev');
-    if (e.key === 'ArrowRight') turnPage('next');
-    if (e.key === 'Escape') closeDrawers();
-  });
+  resultsContainer.innerHTML = '<div class="search-empty-state">Searching publication...</div>';
+  let matchesFound = 0;
+  resultsContainer.innerHTML = "";
 
-  const openToc = document.getElementById('btn-open-toc');
-  const closeToc = document.getElementById('btn-close-toc');
+  for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+    const page = await pdfDoc.getPage(pageNum);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items.map((item) => item.str).join(" ");
 
-  if (openToc) openToc.addEventListener('click', () => {
-    if (drawerOverlay) drawerOverlay.classList.add('active');
-    if (tocDrawer) tocDrawer.classList.add('active');
-  });
+    if (pageText.toLowerCase().includes(query.toLowerCase())) {
+      matchesFound++;
+      const resultCard = document.createElement("div");
+      resultCard.className = "toc-card";
+      resultCard.style.textAlign = "left";
+      resultCard.style.marginBottom = "0.75rem";
 
-  if (closeToc) closeToc.addEventListener('click', closeDrawers);
-  if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawers);
-}
+      // Highlight term match
+      const snippetIndex = pageText.toLowerCase().indexOf(query.toLowerCase());
+      const snippet = pageText.substring(Math.max(0, snippetIndex - 30), Math.min(pageText.length, snippetIndex + 80));
 
-function closeDrawers() {
-  if (drawerOverlay) drawerOverlay.classList.remove('active');
-  if (tocDrawer) tocDrawer.classList.remove('active');
+      resultCard.innerHTML = `
+        <div class="toc-page-label">Page ${pageNum}</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+          ...${snippet}...
+        </p>
+      `;
+
+      resultCard.addEventListener("click", () => {
+        pageFlip.flip(pageNum - 1);
+        document.getElementById("search-modal")?.classList.add("hidden");
+      });
+
+      resultsContainer.appendChild(resultCard);
+    }
+  }
+
+  if (matchesFound === 0) {
+    resultsContainer.innerHTML = `<div class="search-empty-state">No matching results found for "${query}".</div>`;
+  }
 }
