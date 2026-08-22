@@ -1,7 +1,7 @@
 {
   "short_name": "INKSPIRE",
-  "name": "INKSPIRE - Presidency School Banashankari Digital Newsletter",
-  "description": "Official digital publication platform for Presidency School Banashankari, showcasing scholastic excellence, student creative arts, and campus updates.",
+  "name": "INKSPIRE - Presidency School Banashankari Digital Magazine",
+  "description": "Official interactive 3D digital publication platform for Presidency School Banashankari.",
   "icons": [
     {
       "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23002B49'/><path d='M30 25 L70 25 L70 75 L30 75 Z' fill='none' stroke='%23C5A059' stroke-width='4'/><path d='M30 35 L70 35 M30 45 L60 45 M30 55 L65 55 M30 65 L50 65' stroke='%23FFFFFF' stroke-width='3' stroke-linecap='round'/></svg>",
@@ -11,10 +11,9 @@
     }
   ],
   "start_url": "./index.html",
-  "background_color": "#001C38",
+  "background_color": "#001224",
   "theme_color": "#002B49",
   "display": "standalone",
-  "orientation": "any",
-  "scope": "./",
-  "categories": ["education", "news", "magazines"]
+  "orientation": "landscape",
+  "scope": "./"
 }
