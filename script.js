@@ -1,353 +1,378 @@
 /**
- * INKSPIRE - Digital Magazine Reader Engine
- * Architecture: PDF.js (Parsing/Rendering) + St.PageFlip (3D Flipbook)
+ * INKSPIRE - High-Performance Digital Magazine Reader Engine
+ * Engine Architecture: PDF.js -> Page Dimension Auto-Fit -> St.PageFlip Engine
  */
 
-// Configure PDF.js Worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+// Configure PDF.js Worker path
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
 
-// Application State
+// Global Application State
 const STATE = {
-  pdfUrl: 'newsletter.pdf', // Primary target file in repository
-  fallbackPdfUrl: 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf',
+  pdfUrl: 'newsletter.pdf', // Path to target PDF magazine file
   pdfDoc: null,
   pageFlip: null,
   totalPages: 0,
   currentPage: 1,
+  textIndex: [],
   zoomLevel: 1.0,
-  textIndex: [], // Extracted page text for full-text search
-  isLoaded: false
+  isZoomed: false,
+  aspectRatio: 0.75 // Standard 3:4 portrait ratio default
 };
 
-// DOM Elements Reference
+// DOM Cache
 const DOM = {
   loader: document.getElementById('app-loader'),
-  loaderBar: document.getElementById('loader-bar'),
-  loaderStatus: document.getElementById('loader-status'),
-  landingPage: document.getElementById('landing-page'),
-  readerPage: document.getElementById('reader-page'),
-  btnOpenReader: document.getElementById('btn-open-reader'),
-  btnLandingToc: document.getElementById('btn-landing-toc'),
-  btnBackHome: document.getElementById('btn-back-home'),
-  landingCoverTarget: document.getElementById('landing-cover-target'),
-  landingCoverCard: document.getElementById('landing-cover-card'),
-  flipbookContainer: document.getElementById('flipbook'),
-  flipbookWrapper: document.getElementById('flipbook-wrapper'),
-  dockPageInput: document.getElementById('dock-page-input'),
-  dockTotalPages: document.getElementById('dock-total-pages'),
-  dockPrevBtn: document.getElementById('dock-prev-btn'),
-  dockNextBtn: document.getElementById('dock-next-btn'),
-  stagePrevBtn: document.getElementById('stage-prev-btn'),
-  stageNextBtn: document.getElementById('stage-next-btn'),
-  drawerToc: document.getElementById('drawer-toc'),
-  drawerSearch: document.getElementById('drawer-search'),
+  progressBar: document.getElementById('loader-progress-bar'),
+  statusText: document.getElementById('loader-status'),
+  landingView: document.getElementById('landing-view'),
+  readerView: document.getElementById('reader-view'),
+  stage: document.getElementById('magazine-stage'),
+  viewport: document.getElementById('stage-viewport'),
+  flipbook: document.getElementById('flipbook'),
+  inputPageNum: document.getElementById('input-page-num'),
+  lblTotalPages: document.getElementById('lbl-total-pages'),
+  tocOverlay: document.getElementById('toc-overlay'),
+  searchOverlay: document.getElementById('search-overlay'),
   thumbnailGrid: document.getElementById('thumbnail-grid'),
-  searchInput: document.getElementById('search-input'),
-  searchResultsContainer: document.getElementById('search-results-container'),
-  zoomIndicator: document.getElementById('zoom-level-indicator')
+  searchInput: document.getElementById('search-query-input'),
+  searchResults: document.getElementById('search-results-list')
 };
 
-// Initialize Application on DOM Ready
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    await initApplication();
-  } catch (err) {
-    console.error("Initialization failed:", err);
-    updateProgress(100, "Loading demo publication...");
-    await loadPdfDocument(STATE.fallbackPdfUrl);
-  }
+// Application Boot Sequence
+document.addEventListener('DOMContentLoaded', () => {
+  setupEventListeners();
+  loadPublicationDocument();
 });
 
-// 1. MAIN PIPELINE
-async function initApplication() {
-  updateProgress(15, "Connecting to publication source...");
+/* 1. PDF DOCUMENT PIPELINE & ENGINE INITIALIZATION */
+async function loadPublicationDocument() {
+  updateProgress(15, 'Loading publication document...');
 
-  // Try loading primary PDF; fallback gracefully if missing locally
   try {
-    await loadPdfDocument(STATE.pdfUrl);
-  } catch (e) {
-    console.warn("Primary file 'newsletter.pdf' not found. Loading fallback sample...");
-    await loadPdfDocument(STATE.fallbackPdfUrl);
+    const loadingTask = pdfjsLib.getDocument(STATE.pdfUrl);
+    
+    loadingTask.onProgress = (progress) => {
+      if (progress.total > 0) {
+        const percent = Math.round((progress.loaded / progress.total) * 40) + 15;
+        updateProgress(percent, 'Downloading issue content...');
+      }
+    };
+
+    STATE.pdfDoc = await loadingTask.promise;
+    STATE.totalPages = STATE.pdfDoc.numPages;
+    
+    DOM.lblTotalPages.textContent = `of ${STATE.totalPages}`;
+    DOM.inputPageNum.max = STATE.totalPages;
+
+    // Get page aspect ratio from Page 1
+    const firstPage = await STATE.pdfDoc.getPage(1);
+    const viewport = firstPage.getViewport({ scale: 1.0 });
+    STATE.aspectRatio = viewport.width / viewport.height;
+
+    updateProgress(60, 'Rendering high-definition spreads...');
+
+    // Render Canvas elements for all pages
+    await renderAllPages();
+
+    updateProgress(90, 'Initializing 3D page flip engine...');
+
+    // Initialize PageFlip
+    initPageFlipEngine();
+
+    // Generate thumbnails for Contents drawer
+    generateThumbnails();
+
+    updateProgress(100, 'Ready');
+    
+    setTimeout(() => {
+      DOM.loader.style.opacity = '0';
+      setTimeout(() => DOM.loader.classList.add('hidden'), 500);
+    }, 300);
+
+  } catch (error) {
+    console.warn('PDF load failed, starting procedural fallback render:', error);
+    initProceduralFallback();
   }
-
-  setupEventListeners();
-  hideLoader();
 }
 
-// 2. PDF LOADING & RENDERING
-async function loadPdfDocument(url) {
-  updateProgress(30, "Downloading magazine pages...");
-  
-  const loadingTask = pdfjsLib.getDocument(url);
-  loadingTask.onProgress = (p) => {
-    if (p.total > 0) {
-      const pct = Math.round((p.loaded / p.total) * 40) + 30;
-      updateProgress(pct, "Fetching PDF structure...");
-    }
-  };
-
-  STATE.pdfDoc = await loadingTask.promise;
-  STATE.totalPages = STATE.pdfDoc.numPages;
-  DOM.dockTotalPages.textContent = `of ${STATE.totalPages}`;
-  DOM.dockPageInput.max = STATE.totalPages;
-
-  // Render Cover Preview on Landing Page
-  await renderCoverPreview();
-
-  // Render High-Res Pages for Flipbook
-  await buildFlipbookDOM();
-}
-
-async function renderCoverPreview() {
-  const page = await STATE.pdfDoc.getPage(1);
-  const viewport = page.getViewport({ scale: 0.8 });
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
-
-  await page.render({ canvasContext: context, viewport }).promise;
-  DOM.landingCoverTarget.innerHTML = '';
-  DOM.landingCoverTarget.appendChild(canvas);
-}
-
-async function buildFlipbookDOM() {
-  updateProgress(75, "Rendering crisp page typography...");
-  DOM.flipbookContainer.innerHTML = '';
-
-  const firstPage = await STATE.pdfDoc.getPage(1);
-  const unscaledViewport = firstPage.getViewport({ scale: 1.0 });
-  const aspectRatio = unscaledViewport.width / unscaledViewport.height;
-
-  // Calculate optimum fit height for desktop viewport
-  const availableHeight = Math.min(window.innerHeight - 80, 920);
-  const targetPageHeight = Math.max(availableHeight, 520);
-  const targetPageWidth = Math.round(targetPageHeight * aspectRatio);
-
+/* 2. RENDER PDF PAGES TO DOM CANVAS ELEMENTS */
+async function renderAllPages() {
+  DOM.flipbook.innerHTML = '';
   const dpr = window.devicePixelRatio || 1.5;
 
   for (let pageNum = 1; pageNum <= STATE.totalPages; pageNum++) {
-    const pageObj = await STATE.pdfDoc.getPage(pageNum);
-    const viewport = pageObj.getViewport({ 
-      scale: (targetPageHeight / pageObj.getViewport({ scale: 1 }).height) * dpr 
-    });
-
-    const pageDiv = document.createElement('div');
-    pageDiv.className = 'page';
+    const pageWrapper = document.createElement('div');
+    pageWrapper.className = 'page-wrapper';
 
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
+    
+    const page = await STATE.pdfDoc.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 1.5 * dpr });
+
     canvas.width = viewport.width;
     canvas.height = viewport.height;
 
-    await pageObj.render({ canvasContext: context, viewport }).promise;
-    pageDiv.appendChild(canvas);
-    DOM.flipbookContainer.appendChild(pageDiv);
+    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+    
+    pageWrapper.appendChild(canvas);
+    DOM.flipbook.appendChild(pageWrapper);
 
-    // Index text for full-text search engine asynchronously
-    extractPageText(pageObj, pageNum);
+    // Index text content for full-text search engine
+    indexPageText(page, pageNum);
   }
+}
 
-  updateProgress(95, "Initializing 3D page-flip engine...");
+/* 3. CALCULATE MAXIMIZED FLIPBOOK DIMENSIONS & MOUNT ENGINE */
+function initPageFlipEngine() {
+  const dims = calculateMaximizedDimensions();
 
-  // Instantiate St.PageFlip
-  STATE.pageFlip = new window.St.PageFlip(DOM.flipbookContainer, {
-    width: targetPageWidth,
-    height: targetPageHeight,
-    size: 'stretch',
-    minWidth: 300,
-    maxWidth: 1000,
+  STATE.pageFlip = new window.St.PageFlip(DOM.flipbook, {
+    width: dims.width,
+    height: dims.height,
+    size: 'fixed',
+    minWidth: 280,
+    maxWidth: 1200,
     minHeight: 400,
-    maxHeight: 1200,
+    maxHeight: 1400,
     drawShadow: true,
     showCover: true,
     usePortrait: window.innerWidth < 768,
-    maxShadowOpacity: 0.5
+    maxShadowOpacity: 0.5,
+    mobileScrollSupport: false,
+    flippingTime: 800
   });
 
-  STATE.pageFlip.loadFromHTML(document.querySelectorAll('#flipbook .page'));
+  STATE.pageFlip.loadFromHTML(document.querySelectorAll('#flipbook .page-wrapper'));
 
-  // Sync state on page turning events
+  // Sync state on flip events
   STATE.pageFlip.on('flip', (e) => {
     STATE.currentPage = e.data + 1;
-    DOM.dockPageInput.value = STATE.currentPage;
+    DOM.inputPageNum.value = STATE.currentPage;
   });
-
-  // Render Thumbnails in Background
-  generateThumbnails();
 }
 
-// 3. TEXT INDEXING & SEARCH SYSTEM
-async function extractPageText(pageObj, pageNum) {
+/* Dynamic math to calculate max size fitting inside viewport */
+function calculateMaximizedDimensions() {
+  const stageWidth = window.innerWidth;
+  const stageHeight = window.innerHeight - 48; // Less top header height
+
+  const isMobile = stageWidth < 768;
+  const availHeight = stageHeight - 40; // minimal dock margin
+  const availWidth = isMobile ? stageWidth - 20 : stageWidth - 80;
+
+  let pageHeight = availHeight;
+  let pageWidth = Math.round(pageHeight * STATE.aspectRatio);
+
+  // If double-page spread exceeds screen width, recalculate based on width constraint
+  if (!isMobile && (pageWidth * 2 > availWidth)) {
+    pageWidth = Math.floor(availWidth / 2);
+    pageHeight = Math.floor(pageWidth / STATE.aspectRatio);
+  }
+
+  return { width: pageWidth, height: pageHeight };
+}
+
+/* 4. TEXT INDEXING & SEARCH SYSTEM */
+async function indexPageText(pageObj, pageNum) {
   const textContent = await pageObj.getTextContent();
-  const textString = textContent.items.map(i => i.str).join(' ');
+  const textString = textContent.items.map(item => item.str).join(' ');
   STATE.textIndex.push({ pageNum, text: textString });
 }
 
 function executeSearch(query) {
   if (!query.trim()) {
-    DOM.searchResultsContainer.innerHTML = '<div class="search-placeholder">Type a query above to search through extracted PDF text.</div>';
+    DOM.searchResults.innerHTML = '<div class="search-placeholder">Type a keyword above to search this publication.</div>';
     return;
   }
 
-  const results = STATE.textIndex.filter(item => item.text.toLowerCase().includes(query.toLowerCase()));
+  const matches = STATE.textIndex.filter(item => item.text.toLowerCase().includes(query.toLowerCase()));
 
-  if (results.length === 0) {
-    DOM.searchResultsContainer.innerHTML = '<div class="search-placeholder">No occurrences found for this term.</div>';
+  if (matches.length === 0) {
+    DOM.searchResults.innerHTML = `<div class="search-placeholder">No matches found for "${query}".</div>`;
     return;
   }
 
-  DOM.searchResultsContainer.innerHTML = results.map(res => {
-    const idx = res.text.toLowerCase().indexOf(query.toLowerCase());
-    const start = Math.max(0, idx - 30);
-    const end = Math.min(res.text.length, idx + 50);
-    const snippet = res.text.substring(start, end).replace(
-      new RegExp(query, 'gi'), 
-      match => `<strong style="color:var(--color-accent-gold);">${match}</strong>`
-    );
+  DOM.searchResults.innerHTML = matches.map(m => {
+    const idx = m.text.toLowerCase().indexOf(query.toLowerCase());
+    const snippet = m.text.substring(Math.max(0, idx - 30), Math.min(m.text.length, idx + 60))
+      .replace(new RegExp(query, 'gi'), match => `<strong style="color:var(--gold-accent);">${match}</strong>`);
 
     return `
-      <div class="search-result-card" onclick="jumpToPage(${res.pageNum})">
-        <span class="result-page-tag">PAGE ${res.pageNum}</span>
-        <p class="result-snippet">"...${snippet}..."</p>
+      <div class="search-result-card" onclick="jumpToPage(${m.pageNum})">
+        <span class="search-page-badge">Page ${m.pageNum}</span>
+        <p class="search-snippet">"...${snippet}..."</p>
       </div>
     `;
   }).join('');
 }
 
-// 4. THUMBNAILS GENERATOR
+/* 5. THUMBNAIL GRID GENERATOR */
 async function generateThumbnails() {
   DOM.thumbnailGrid.innerHTML = '';
+  
   for (let pageNum = 1; pageNum <= STATE.totalPages; pageNum++) {
-    const pageObj = await STATE.pdfDoc.getPage(pageNum);
-    const viewport = pageObj.getViewport({ scale: 0.2 });
+    const page = await STATE.pdfDoc.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 0.3 });
 
-    const thumbCard = document.createElement('div');
-    thumbCard.className = 'thumb-item';
-    thumbCard.onclick = () => jumpToPage(pageNum);
+    const card = document.createElement('div');
+    card.className = 'thumb-card';
+    card.onclick = () => jumpToPage(pageNum);
 
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
     canvas.width = viewport.width;
     canvas.height = viewport.height;
 
-    await pageObj.render({ canvasContext: context, viewport }).promise;
+    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
     const label = document.createElement('span');
+    label.className = 'thumb-label';
     label.textContent = `Page ${pageNum}`;
 
-    thumbCard.appendChild(canvas);
-    thumbCard.appendChild(label);
-    DOM.thumbnailGrid.appendChild(thumbCard);
+    card.appendChild(canvas);
+    card.appendChild(label);
+    DOM.thumbnailGrid.appendChild(card);
   }
 }
 
-// 5. NAVIGATION & USER INTERACTION
-function jumpToPage(pageNum) {
-  if (!STATE.pageFlip) return;
-  const targetIndex = Math.max(0, Math.min(pageNum - 1, STATE.totalPages - 1));
-  STATE.pageFlip.turnToPage(targetIndex);
-  closeDrawers();
-}
-
+/* 6. CONTROL EVENT BINDINGS & HANDLERS */
 function setupEventListeners() {
   // Navigation Transitions
-  DOM.btnOpenReader.addEventListener('click', showReader);
-  DOM.landingCoverCard.addEventListener('click', showReader);
-  DOM.btnBackHome.addEventListener('click', showLanding);
-  
-  DOM.btnLandingToc.addEventListener('click', () => {
+  document.getElementById('btn-read-issue')?.addEventListener('click', showReader);
+  document.getElementById('btn-browse-toc-landing')?.addEventListener('click', () => {
     showReader();
-    openDrawer(DOM.drawerToc);
+    toggleOverlay(DOM.tocOverlay);
   });
+  document.getElementById('btn-back-landing')?.addEventListener('click', showLanding);
 
-  // Controls & Flip Actions
-  DOM.dockPrevBtn.addEventListener('click', () => STATE.pageFlip && STATE.pageFlip.flipPrev());
-  DOM.dockNextBtn.addEventListener('click', () => STATE.pageFlip && STATE.pageFlip.flipNext());
-  DOM.stagePrevBtn.addEventListener('click', () => STATE.pageFlip && STATE.pageFlip.flipPrev());
-  DOM.stageNextBtn.addEventListener('click', () => STATE.pageFlip && STATE.pageFlip.flipNext());
+  // Flipbook Controls
+  document.getElementById('btn-prev-page')?.addEventListener('click', () => STATE.pageFlip?.flipPrev());
+  document.getElementById('btn-next-page')?.addEventListener('click', () => STATE.pageFlip?.flipNext());
+  document.getElementById('btn-dock-prev')?.addEventListener('click', () => STATE.pageFlip?.flipPrev());
+  document.getElementById('btn-dock-next')?.addEventListener('click', () => STATE.pageFlip?.flipNext());
 
-  DOM.dockPageInput.addEventListener('change', (e) => {
+  // Input Jump
+  DOM.inputPageNum?.addEventListener('change', (e) => {
     const val = parseInt(e.target.value, 10);
     if (!isNaN(val)) jumpToPage(val);
   });
 
-  // Drawer Controls
-  document.getElementById('btn-toggle-toc').addEventListener('click', () => toggleDrawer(DOM.drawerToc));
-  document.getElementById('close-toc-btn').addEventListener('click', closeDrawers);
+  // Modal Toggles
+  document.getElementById('btn-toc-toggle')?.addEventListener('click', () => toggleOverlay(DOM.tocOverlay));
+  document.getElementById('btn-close-toc')?.addEventListener('click', closeOverlays);
+  
+  document.getElementById('btn-search-toggle')?.addEventListener('click', () => toggleOverlay(DOM.searchOverlay));
+  document.getElementById('btn-close-search')?.addEventListener('click', closeOverlays);
 
-  document.getElementById('btn-toggle-search').addEventListener('click', () => toggleDrawer(DOM.drawerSearch));
-  document.getElementById('close-search-btn').addEventListener('click', closeDrawers);
-
-  DOM.searchInput.addEventListener('input', (e) => executeSearch(e.target.value));
+  DOM.searchInput?.addEventListener('input', (e) => executeSearch(e.target.value));
 
   // Zoom Handling
-  document.getElementById('btn-zoom-in').addEventListener('click', () => setZoom(STATE.zoomLevel + 0.15));
-  document.getElementById('btn-zoom-out').addEventListener('click', () => setZoom(STATE.zoomLevel - 0.15));
-  document.getElementById('btn-zoom-reset').addEventListener('click', () => setZoom(1.0));
+  document.getElementById('btn-zoom-in')?.addEventListener('click', () => handleZoom(0.2));
+  document.getElementById('btn-zoom-out')?.addEventListener('click', () => handleZoom(-0.2));
 
-  // Fullscreen Handling
-  document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+  // Fullscreen Handler
+  document.getElementById('btn-fullscreen-toggle')?.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => console.log(err));
+    } else {
+      document.exitFullscreen();
+    }
+  });
 
-  // Global Keyboard Shortcuts
+  // Keyboard Shortcuts
   document.addEventListener('keydown', (e) => {
-    if (DOM.readerPage.classList.contains('hidden')) return;
-    
-    if (e.key === 'ArrowLeft') STATE.pageFlip && STATE.pageFlip.flipPrev();
-    if (e.key === 'ArrowRight') STATE.pageFlip && STATE.pageFlip.flipNext();
-    if (e.key === 'Escape') closeDrawers();
+    if (DOM.readerView.classList.contains('hidden')) return;
+    if (e.key === 'ArrowLeft') STATE.pageFlip?.flipPrev();
+    if (e.key === 'ArrowRight') STATE.pageFlip?.flipNext();
+    if (e.key === 'Escape') closeOverlays();
     if (e.ctrlKey && e.key === 'f') {
       e.preventDefault();
-      toggleDrawer(DOM.drawerSearch);
+      toggleOverlay(DOM.searchOverlay);
+    }
+  });
+
+  // Resize Handler
+  window.addEventListener('resize', () => {
+    if (STATE.pageFlip && !DOM.readerView.classList.contains('hidden')) {
+      const dims = calculateMaximizedDimensions();
+      STATE.pageFlip.updateFromHTML(document.querySelectorAll('#flipbook .page-wrapper'));
     }
   });
 }
 
-function setZoom(level) {
-  STATE.zoomLevel = Math.min(Math.max(0.8, level), 1.6);
-  DOM.flipbookWrapper.style.transform = `scale(${STATE.zoomLevel})`;
-  DOM.zoomIndicator.textContent = `${Math.round(STATE.zoomLevel * 100)}%`;
+function jumpToPage(pageNum) {
+  if (!STATE.pageFlip) return;
+  const target = Math.max(0, Math.min(pageNum - 1, STATE.totalPages - 1));
+  STATE.pageFlip.turnToPage(target);
+  closeOverlays();
 }
 
-function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
-  } else {
-    document.exitFullscreen();
-  }
+function handleZoom(delta) {
+  STATE.zoomLevel = Math.max(0.8, Math.min(2.0, STATE.zoomLevel + delta));
+  DOM.viewport.style.transform = `scale(${STATE.zoomLevel})`;
 }
 
 function showReader() {
-  DOM.landingPage.classList.add('hidden');
-  DOM.readerPage.classList.remove('hidden');
-  if (STATE.pageFlip) STATE.pageFlip.update();
+  DOM.landingView.classList.add('hidden');
+  DOM.readerView.classList.remove('hidden');
+  window.dispatchEvent(new Event('resize'));
 }
 
 function showLanding() {
-  DOM.readerPage.classList.add('hidden');
-  DOM.landingPage.classList.remove('hidden');
+  DOM.readerView.classList.add('hidden');
+  DOM.landingView.classList.remove('hidden');
 }
 
-function toggleDrawer(drawerEl) {
-  const isActive = drawerEl.classList.contains('active');
-  closeDrawers();
-  if (!isActive) drawerEl.classList.add('active');
+function toggleOverlay(overlayEl) {
+  const isActive = overlayEl.classList.contains('active');
+  closeOverlays();
+  if (!isActive) overlayEl.classList.add('active');
 }
 
-function closeDrawers() {
-  DOM.drawerToc.classList.remove('active');
-  DOM.drawerSearch.classList.remove('active');
+function closeOverlays() {
+  DOM.tocOverlay.classList.remove('active');
+  DOM.searchOverlay.classList.remove('active');
 }
 
-function updateProgress(percent, statusText) {
-  if (DOM.loaderBar) DOM.loaderBar.style.width = percent + '%';
-  if (DOM.loaderStatus) DOM.loaderStatus.textContent = statusText;
+function updateProgress(percent, text) {
+  if (DOM.progressBar) DOM.progressBar.style.width = percent + '%';
+  if (DOM.statusText) DOM.statusText.textContent = text;
 }
 
-function hideLoader() {
-  setTimeout(() => {
-    DOM.loader.style.opacity = '0';
-    DOM.loader.style.visibility = 'hidden';
-  }, 300);
+/* Fallback procedural generator if local PDF is missing */
+function initProceduralFallback() {
+  STATE.totalPages = 4;
+  DOM.lblTotalPages.textContent = `of ${STATE.totalPages}`;
+  DOM.flipbook.innerHTML = '';
+
+  for (let i = 1; i <= 4; i++) {
+    const pageWrapper = document.createElement('div');
+    pageWrapper.className = 'page-wrapper';
+    pageWrapper.style.padding = '2rem';
+    pageWrapper.style.background = i === 1 ? '#001224' : '#FFFFFF';
+    pageWrapper.style.color = i === 1 ? '#FFFFFF' : '#0F172A';
+
+    pageWrapper.innerHTML = i === 1 ? `
+      <div style="height:100%; border:2px solid #C5A059; padding:2rem; display:flex; flex-direction:column; justify-content:space-between; text-align:center;">
+        <span style="font-family:'Plus Jakarta Sans'; font-size:0.8rem; color:#C5A059; letter-spacing:2px;">PRESIDENCY SCHOOL BANASHANKARI</span>
+        <h1 style="font-family:'Playfair Display'; font-size:3rem; color:#C5A059;">INKSPIRE</h1>
+        <p style="font-size:0.9rem; color:#94A3B8;">Drag corners or click side arrows to turn pages.</p>
+      </div>
+    ` : `
+      <div style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
+        <h2 style="font-family:'Cormorant Garamond'; color:#001224; font-size:2rem;">Editorial Page ${i}</h2>
+        <p style="line-height:1.6; color:#475569; text-align:justify;">Welcome to the INKSPIRE digital reader platform. Place your custom publication named "newsletter.pdf" in the root directory to display your school magazine automatically.</p>
+        <div style="border-top:1px solid #E2E8F0; padding-top:0.5rem; font-size:0.75rem; color:#94A3B8;">Page ${i}</div>
+      </div>
+    `;
+    DOM.flipbook.appendChild(pageWrapper);
+  }
+
+  initPageFlipEngine();
+  DOM.loader.style.opacity = '0';
+  setTimeout(() => DOM.loader.classList.add('hidden'), 500);
 }
