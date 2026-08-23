@@ -1,311 +1,311 @@
 /**
- * INKSPIRE - Official 3D Interactive Magazine Engine
- * Presidency School Banashankari
+ * INKSPIRE - High-Performance Digital Magazine Reader Engine
+ * Architecture: PDF.js -> Page Rendering -> St.PageFlip
  */
 
-// 1. MAGAZINE CONTENT DATA
-const magazineSpreads = [
-  {
-    spreadId: 0,
-    left: {
-      type: 'cover',
-      vol: 'VOL. IV | ISSUE 02',
-      date: 'AUGUST 2026',
-      title: 'INKSPIRE',
-      headline: 'Shaping Tomorrow’s Visionaries',
-      lead: 'Official Digital Newsletter of Presidency School Banashankari, celebrating academic excellence, creative arts, and campus innovation.'
-    },
-    right: {
-      type: 'editorial',
-      tag: "Principal's Desk",
-      title: "Fostering Excellence & Courage",
-      author: "Dr. Sunita V. Sharma, Principal",
-      text: "<p>Welcome to this edition of INKSPIRE. As we traverse through another remarkable academic session, our institution continues to uphold the core values of integrity, inquiry, and intellectual resilience.</p><p>Our students have demonstrated extraordinary spirit in national science congresses, debate championships, and inter-school athletic meets. May this publication inspire every reader.</p>",
-      pageNum: 1
-    }
-  },
-  {
-    spreadId: 1,
-    left: {
-      type: 'article',
-      tag: "Academic Horizons",
-      title: "National Science Olympiad Winners",
-      text: "<p>Presidency Banashankari secured top honours in the National Science Olympiad 2026. Our Grade X research team presented an AI-driven water filtration model designed for local water conservation.</p><p>Under the guidance of our Department of Sciences, student researchers designed low-cost sensor arrays tested right here on our school campus.</p>",
-      img: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop",
-      pageNum: 2
-    },
-    right: {
-      type: 'article',
-      tag: "Campus Innovation",
-      title: "The Robotics & AI Workshop",
-      text: "<p>Our state-of-the-art Innovation Lab hosted an intensive 3-day workshop on Autonomous Robotics and Machine Learning basics for Middle and High School students.</p><p>Participants constructed autonomous line-following rovers and programmed sensor-activated safety devices, demonstrating exceptional computational thinking.</p>",
-      img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800&auto=format&fit=crop",
-      pageNum: 3
-    }
-  },
-  {
-    spreadId: 2,
-    left: {
-      type: 'article',
-      tag: "Cultural Symphony",
-      title: "Inter-School Drama Victory",
-      text: "<p>The Presidency School Banashankari Theatrical Troupe took home the Best Play trophy at the Regional Inter-School Cultural Fest. Their poignant original play, 'Echoes of Time', won unanimous acclaim from judges.</p><p>From original music scores to intricate stage design, the production was entirely student-led.</p>",
-      img: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=800&auto=format&fit=crop",
-      pageNum: 4
-    },
-    right: {
-      type: 'article',
-      tag: "Sports Arena",
-      title: "Annual Athletic Champions",
-      text: "<p>Our young athletes dominated the Inter-State Track & Field Meet in Bengaluru. With 12 Gold, 8 Silver, and 5 Bronze medals, Presidency School Banashankari bagged the Overall Championship Trophy.</p><p>Special recognition goes to Master K. Aryan for breaking the 400m sprint record!</p>",
-      img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop",
-      pageNum: 5
-    }
-  },
-  {
-    spreadId: 3,
-    left: {
-      type: 'article',
-      tag: "Creative Corner",
-      title: "The Canvas of Tomorrow",
-      text: "<p><em>By Diya S., Class IX</em></p><p>We paint the sky with whispered dreams,<br>Beside the gentle flowing streams,<br>Where knowledge grows and courage sings,<br>And hope gives every spirit wings.</p>",
-      pageNum: 6
-    },
-    right: {
-      type: 'backcover',
-      title: 'INKSPIRE',
-      subtitle: 'Presidency School Banashankari',
-      text: 'Thank you for reading the official digital newsletter. Stay connected with our institutional journey.',
-      contact: 'www.presidencyschoolbsk.org',
-      pageNum: 7
-    }
+// Configure PDF.js Worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// Application State
+const STATE = {
+  pdfUrl: 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf', // Fallback working sample PDF URL
+  pdfDoc: null,
+  pageFlip: null,
+  totalPages: 0,
+  currentPage: 1,
+  textIndex: [], // Index for client-side full-text search
+  isZoomed: false
+};
+
+// DOM References
+const DOM = {
+  loader: document.getElementById('app-loader'),
+  progressBar: document.getElementById('loader-progress-bar'),
+  statusText: document.getElementById('loader-status'),
+  flipbook: document.getElementById('flipbook'),
+  stageViewport: document.getElementById('stage-viewport'),
+  inputPageNum: document.getElementById('input-page-num'),
+  lblTotalPages: document.getElementById('lbl-total-pages'),
+  btnPrev: document.getElementById('btn-prev-page'),
+  btnNext: document.getElementById('btn-next-page'),
+  tocOverlay: document.getElementById('toc-overlay'),
+  searchOverlay: document.getElementById('search-overlay'),
+  thumbnailGrid: document.getElementById('thumbnail-grid'),
+  searchQueryInput: document.getElementById('search-query-input'),
+  searchResultsList: document.getElementById('search-results-list')
+};
+
+// Initialize Application
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await initMagazineReader();
+    setupEventListeners();
+  } catch (error) {
+    console.error('Initialization error:', error);
+    updateLoader(100, 'Error loading document. Loading procedural pages...');
+    setTimeout(initProceduralFallback, 1000);
   }
-];
-
-// Table of Contents Reference
-const tocData = [
-  { title: "Principal's Address", page: 1 },
-  { title: "National Science Olympiad", page: 2 },
-  { title: "Robotics & AI Workshop", page: 3 },
-  { title: "Inter-School Drama Victory", page: 4 },
-  { title: "Annual Athletic Champions", page: 5 },
-  { title: "Creative Corner", page: 6 }
-];
-
-// 2. STATE MANAGEMENT
-let currentSpread = 0;
-let isAnimating = false;
-
-// DOM Elements
-let baseLeft, baseRight, bookElement, prevBtn, nextBtn, counterEl, loader, loaderBar, drawerOverlay, tocDrawer, tocList;
-
-// 3. INITIALIZATION
-document.addEventListener('DOMContentLoaded', () => {
-  baseLeft = document.getElementById('page-base-left');
-  baseRight = document.getElementById('page-base-right');
-  bookElement = document.getElementById('magazine-book');
-  prevBtn = document.getElementById('btn-prev');
-  nextBtn = document.getElementById('btn-next');
-  counterEl = document.getElementById('page-counter-text');
-  loader = document.getElementById('loading-screen');
-  loaderBar = document.getElementById('loader-bar-fill');
-  drawerOverlay = document.getElementById('drawer-overlay');
-  tocDrawer = document.getElementById('toc-drawer');
-  tocList = document.getElementById('toc-list-items');
-
-  // Preloader Animation
-  let progress = 0;
-  const loadInterval = setInterval(() => {
-    progress += 25;
-    if (loaderBar) loaderBar.style.width = progress + '%';
-    if (progress >= 100) {
-      clearInterval(loadInterval);
-      setTimeout(() => {
-        if (loader) {
-          loader.style.opacity = '0';
-          loader.style.visibility = 'hidden';
-        }
-      }, 300);
-    }
-  }, 100);
-
-  renderBaseSpread(0);
-  populateTOC();
-  setupEventListeners();
 });
 
-// 4. RENDER STATIC BASE PAGES
-function renderBaseSpread(index) {
-  const spread = magazineSpreads[index];
-  baseLeft.innerHTML = renderPageContent(spread.left);
-  baseRight.innerHTML = renderPageContent(spread.right);
+// 1. PDF PIPELINE & PAGEFLIP INITIALIZATION
+async function initMagazineReader() {
+  updateLoader(15, 'Fetching publication document...');
   
-  currentSpread = index;
-  updateControls();
-}
+  // Load PDF Document
+  const loadingTask = pdfjsLib.getDocument(STATE.pdfUrl);
+  loadingTask.onProgress = (progress) => {
+    if (progress.total > 0) {
+      const percent = Math.round((progress.loaded / progress.total) * 40) + 15;
+      updateLoader(percent, 'Downloading PDF publication...');
+    }
+  };
 
-function renderPageContent(data) {
-  if (data.type === 'cover') {
-    return `
-      <div class="cover-inner">
-        <div>
-          <span class="edition-badge">${data.vol}</span>
-          <div style="font-family:var(--font-accent); font-size:0.75rem; color:var(--color-accent-gold-light); margin-top:4px;">${data.date}</div>
-        </div>
-        <div>
-          <h1 class="cover-title">${data.title}</h1>
-          <h2 class="cover-headline">${data.headline}</h2>
-          <p class="cover-lead">${data.lead}</p>
-        </div>
-        <div style="font-family:var(--font-accent); font-size:0.75rem; color:rgba(255,255,255,0.6);">Presidency School Banashankari</div>
-      </div>
-    `;
-  }
+  STATE.pdfDoc = await loadingTask.promise;
+  STATE.totalPages = STATE.pdfDoc.numPages;
+  DOM.lblTotalPages.textContent = `of ${STATE.totalPages}`;
+  DOM.inputPageNum.max = STATE.totalPages;
 
-  if (data.type === 'backcover') {
-    return `
-      <div class="cover-inner" style="text-align:center; justify-content:center; align-items:center;">
-        <h2 style="font-family:var(--font-display); font-size:2.5rem; color:#FFF;">${data.title}</h2>
-        <p style="font-family:var(--font-accent); color:var(--color-accent-gold); font-size:0.8rem; letter-spacing:2px; margin-bottom:1.5rem;">${data.subtitle}</p>
-        <p style="font-size:0.9rem; color:rgba(255,255,255,0.8); margin-bottom:2rem;">${data.text}</p>
-        <div style="font-family:var(--font-accent); font-size:0.8rem; color:var(--color-accent-gold-light);">${data.contact}</div>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="page-inner">
-      <div>
-        ${data.tag ? `<div class="page-tag">${data.tag}</div>` : ''}
-        <h3 class="page-title">${data.title}</h3>
-        ${data.author ? `<div style="font-family:var(--font-heading); font-style:italic; font-size:0.95rem; color:var(--color-primary-light); margin-bottom:0.75rem;">By ${data.author}</div>` : ''}
-        ${data.img ? `<div class="page-image-frame"><img src="${data.img}" alt="Article image"></div>` : ''}
-        <div class="page-body">${data.text}</div>
-      </div>
-      <div class="page-footer-bar">
-        <span>INKSPIRE Publication</span>
-        <span>Page ${data.pageNum}</span>
-      </div>
-    </div>
-  `;
-}
-
-// 5. 3D PAGE FLIP ANIMATION ENGINE
-function turnPage(direction) {
-  if (isAnimating) return;
-
-  if (direction === 'next' && currentSpread < magazineSpreads.length - 1) {
-    isAnimating = true;
-    const targetSpread = currentSpread + 1;
-
-    const flipper = document.createElement('div');
-    flipper.className = 'page-flipper flip-left';
-
-    flipper.innerHTML = `
-      <div class="flipper-face front">${baseRight.innerHTML}</div>
-      <div class="flipper-face back">${renderPageContent(magazineSpreads[targetSpread].left)}</div>
-    `;
-
-    baseRight.innerHTML = renderPageContent(magazineSpreads[targetSpread].right);
-    bookElement.appendChild(flipper);
-
-    flipper.addEventListener('animationend', () => {
-      baseLeft.innerHTML = renderPageContent(magazineSpreads[targetSpread].left);
-      flipper.remove();
-      currentSpread = targetSpread;
-      updateControls();
-      isAnimating = false;
-    });
-
-  } else if (direction === 'prev' && currentSpread > 0) {
-    isAnimating = true;
-    const targetSpread = currentSpread - 1;
-
-    const flipper = document.createElement('div');
-    flipper.className = 'page-flipper flip-right';
-
-    flipper.innerHTML = `
-      <div class="flipper-face front">${baseLeft.innerHTML}</div>
-      <div class="flipper-face back">${renderPageContent(magazineSpreads[targetSpread].right)}</div>
-    `;
-
-    baseLeft.innerHTML = renderPageContent(magazineSpreads[targetSpread].left);
-    bookElement.appendChild(flipper);
-
-    flipper.addEventListener('animationend', () => {
-      baseRight.innerHTML = renderPageContent(magazineSpreads[targetSpread].right);
-      flipper.remove();
-      currentSpread = targetSpread;
-      updateControls();
-      isAnimating = false;
-    });
-  }
-}
-
-// Update UI Buttons and Page Number Counter
-function updateControls() {
-  if (prevBtn) prevBtn.disabled = currentSpread === 0;
-  if (nextBtn) nextBtn.disabled = currentSpread === magazineSpreads.length - 1;
+  updateLoader(60, 'Rendering high-resolution pages...');
   
-  if (counterEl) {
-    if (currentSpread === 0) {
-      counterEl.textContent = 'Cover Spread';
-    } else {
-      const leftNum = magazineSpreads[currentSpread].left.pageNum;
-      const rightNum = magazineSpreads[currentSpread].right.pageNum;
-      counterEl.textContent = `Pages ${leftNum} – ${rightNum || 'End'}`;
-    }
+  // Calculate optimal canvas dimensions based on viewport
+  const firstPage = await STATE.pdfDoc.getPage(1);
+  const viewport = firstPage.getViewport({ scale: 1.0 });
+  const aspectRatio = viewport.width / viewport.height;
+  
+  const targetHeight = Math.min(window.innerHeight - 100, 900);
+  const targetWidth = Math.round(targetHeight * aspectRatio);
+
+  // Render pages to DOM elements
+  DOM.flipbook.innerHTML = '';
+  for (let pageNum = 1; pageNum <= STATE.totalPages; pageNum++) {
+    const pageDiv = document.createElement('div');
+    pageDiv.className = 'page';
+    
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    
+    // DPR scaling for razor-sharp typography
+    const dpr = window.devicePixelRatio || 1;
+    const pageObj = await STATE.pdfDoc.getPage(pageNum);
+    const pageViewport = pageObj.getViewport({ scale: (targetHeight / pageObj.getViewport({ scale: 1 }).height) * dpr });
+
+    canvas.width = pageViewport.width;
+    canvas.height = pageViewport.height;
+
+    await pageObj.render({ canvasContext: context, viewport: pageViewport }).promise;
+    pageDiv.appendChild(canvas);
+    DOM.flipbook.appendChild(pageDiv);
+
+    // Build Search Text Index asynchronously
+    indexPageText(pageObj, pageNum);
+    
+    const progressPercent = 60 + Math.round((pageNum / STATE.totalPages) * 30);
+    updateLoader(progressPercent, `Rendering page ${pageNum} of ${STATE.totalPages}...`);
   }
-}
 
-// 6. TOC & NAVIGATION HELPERS
-function populateTOC() {
-  if (!tocList) return;
-  tocList.innerHTML = tocData.map(item => `
-    <li class="toc-item" onclick="jumpToPage(${item.page})">
-      <span style="font-family:var(--font-accent); font-weight:700; font-size:0.9rem; color:var(--color-primary);">${item.title}</span>
-      <span style="font-family:var(--font-display); font-weight:700; color:var(--color-accent-gold);">p. ${item.page}</span>
-    </li>
-  `).join('');
-}
+  updateLoader(95, 'Initializing 3D Flipbook engine...');
 
-function jumpToPage(pageNum) {
-  let targetIndex = 0;
-  magazineSpreads.forEach((s, idx) => {
-    if (s.left.pageNum === pageNum || s.right.pageNum === pageNum) {
-      targetIndex = idx;
-    }
+  // Initialize St.PageFlip
+  STATE.pageFlip = new window.St.PageFlip(DOM.flipbook, {
+    width: targetWidth,
+    height: targetHeight,
+    size: 'stretch',
+    minWidth: 280,
+    maxWidth: 1000,
+    minHeight: 400,
+    maxHeight: 1200,
+    drawShadow: true,
+    showCover: true,
+    usePortrait: true,
+    maxShadowOpacity: 0.6,
+    mobileScrollSupport: false
   });
-  renderBaseSpread(targetIndex);
-  closeDrawers();
+
+  STATE.pageFlip.loadFromHTML(document.querySelectorAll('#flipbook .page'));
+
+  // Sync state on flip events
+  STATE.pageFlip.on('flip', (e) => {
+    STATE.currentPage = e.data + 1;
+    DOM.inputPageNum.value = STATE.currentPage;
+  });
+
+  // Generate background thumbnails for TOC
+  generateThumbnails(targetWidth, targetHeight);
+
+  updateLoader(100, 'Complete');
+  setTimeout(() => {
+    DOM.loader.style.opacity = '0';
+    DOM.loader.style.visibility = 'hidden';
+  }, 400);
+}
+
+// 2. TEXT INDEXING & SEARCH SYSTEM
+async function indexPageText(pageObj, pageNum) {
+  const textContent = await pageObj.getTextContent();
+  const textString = textContent.items.map(item => item.str).join(' ');
+  STATE.textIndex.push({ pageNum, text: textString });
+}
+
+function performSearch(query) {
+  if (!query.trim()) {
+    DOM.searchResultsList.innerHTML = '<div class="search-placeholder">Enter text above to search through all rendered PDF pages.</div>';
+    return;
+  }
+
+  const matches = STATE.textIndex.filter(item => item.text.toLowerCase().includes(query.toLowerCase()));
+
+  if (matches.length === 0) {
+    DOM.searchResultsList.innerHTML = '<div class="search-placeholder">No matching text found in this issue.</div>';
+    return;
+  }
+
+  DOM.searchResultsList.innerHTML = matches.map(m => {
+    const idx = m.text.toLowerCase().indexOf(query.toLowerCase());
+    const start = Math.max(0, idx - 40);
+    const end = Math.min(m.text.length, idx + 60);
+    const snippet = m.text.substring(start, end).replace(new RegExp(query, 'gi'), match => `<strong style="color:var(--color-accent-gold);">${match}</strong>`);
+
+    return `
+      <div class="search-result-item" onclick="jumpToPage(${m.pageNum})">
+        <span class="result-page-badge">Page ${m.pageNum}</span>
+        <p class="result-snippet">"...${snippet}..."</p>
+      </div>
+    `;
+  }).join('');
+}
+
+// 3. THUMBNAILS GENERATOR
+async function generateThumbnails() {
+  DOM.thumbnailGrid.innerHTML = '';
+  for (let pageNum = 1; pageNum <= STATE.totalPages; pageNum++) {
+    const pageObj = await STATE.pdfDoc.getPage(pageNum);
+    const viewport = pageObj.getViewport({ scale: 0.25 });
+
+    const thumbItem = document.createElement('div');
+    thumbItem.className = 'thumb-item';
+    thumbItem.onclick = () => jumpToPage(pageNum);
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await pageObj.render({ canvasContext: context, viewport: viewport }).promise;
+
+    const label = document.createElement('span');
+    label.textContent = `Page ${pageNum}`;
+
+    thumbItem.appendChild(canvas);
+    thumbItem.appendChild(label);
+    DOM.thumbnailGrid.appendChild(thumbItem);
+  }
+}
+
+// 4. NAVIGATION & CONTROLS
+function jumpToPage(pageNum) {
+  if (!STATE.pageFlip) return;
+  const targetIndex = Math.max(0, Math.min(pageNum - 1, STATE.totalPages - 1));
+  STATE.pageFlip.turnToPage(targetIndex);
+  closeOverlays();
 }
 
 function setupEventListeners() {
-  if (prevBtn) prevBtn.addEventListener('click', () => turnPage('prev'));
-  if (nextBtn) {
-    nextBtn.disabled = false;
-    nextBtn.addEventListener('click', () => turnPage('next'));
-  }
+  // Flipbook Controls
+  DOM.btnPrev.addEventListener('click', () => STATE.pageFlip && STATE.pageFlip.flipPrev());
+  DOM.btnNext.addEventListener('click', () => STATE.pageFlip && STATE.pageFlip.flipNext());
 
+  DOM.inputPageNum.addEventListener('change', (e) => {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val)) jumpToPage(val);
+  });
+
+  // Keyboard Shortcuts
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') turnPage('prev');
-    if (e.key === 'ArrowRight') turnPage('next');
-    if (e.key === 'Escape') closeDrawers();
+    if (e.key === 'ArrowLeft') STATE.pageFlip && STATE.pageFlip.flipPrev();
+    if (e.key === 'ArrowRight') STATE.pageFlip && STATE.pageFlip.flipNext();
+    if (e.key === 'Escape') closeOverlays();
+    if (e.ctrlKey && e.key === 'f') {
+      e.preventDefault();
+      toggleOverlay(DOM.searchOverlay);
+    }
   });
 
-  const openToc = document.getElementById('btn-open-toc');
-  const closeToc = document.getElementById('btn-close-toc');
+  // UI Overlays
+  document.getElementById('btn-toc-toggle').addEventListener('click', () => toggleOverlay(DOM.tocOverlay));
+  document.getElementById('btn-close-toc').addEventListener('click', closeOverlays);
 
-  if (openToc) openToc.addEventListener('click', () => {
-    if (drawerOverlay) drawerOverlay.classList.add('active');
-    if (tocDrawer) tocDrawer.classList.add('active');
+  document.getElementById('btn-search-toggle').addEventListener('click', () => toggleOverlay(DOM.searchOverlay));
+  document.getElementById('btn-close-search').addEventListener('click', closeOverlays);
+
+  DOM.searchQueryInput.addEventListener('input', (e) => performSearch(e.target.value));
+
+  // Zoom & Fullscreen
+  document.getElementById('btn-zoom-toggle').addEventListener('click', () => {
+    STATE.isZoomed = !STATE.isZoomed;
+    DOM.stageViewport.classList.toggle('zoomed', STATE.isZoomed);
   });
 
-  if (closeToc) closeToc.addEventListener('click', closeDrawers);
-  if (drawerOverlay) drawerOverlay.addEventListener('click', closeDrawers);
+  document.getElementById('btn-fullscreen-toggle').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  });
 }
 
-function closeDrawers() {
-  if (drawerOverlay) drawerOverlay.classList.remove('active');
-  if (tocDrawer) tocDrawer.classList.remove('active');
+function toggleOverlay(overlayEl) {
+  const isActive = overlayEl.classList.contains('active');
+  closeOverlays();
+  if (!isActive) overlayEl.classList.add('active');
+}
+
+function closeOverlays() {
+  DOM.tocOverlay.classList.remove('active');
+  DOM.searchOverlay.classList.remove('active');
+}
+
+function updateLoader(percent, statusText) {
+  if (DOM.progressBar) DOM.progressBar.style.width = percent + '%';
+  if (DOM.statusText) DOM.statusText.textContent = statusText;
+}
+
+// Fallback generator in case of network/PDF CORS block
+function initProceduralFallback() {
+  STATE.totalPages = 6;
+  DOM.lblTotalPages.textContent = `of ${STATE.totalPages}`;
+  DOM.flipbook.innerHTML = '';
+
+  for (let i = 1; i <= 6; i++) {
+    const pageDiv = document.createElement('div');
+    pageDiv.className = 'page';
+    pageDiv.style.padding = '3rem';
+    pageDiv.style.background = i === 1 ? '#001224' : '#FFFFFF';
+    pageDiv.style.color = i === 1 ? '#FFFFFF' : '#1E293B';
+
+    pageDiv.innerHTML = i === 1 ? `
+      <div style="height:100%; display:flex; flex-direction:column; justify-content:space-between; border:2px solid #C5A059; padding:2rem;">
+        <h1 style="font-family:'Playfair Display'; font-size:3rem; color:#C5A059;">INKSPIRE</h1>
+        <p style="font-size:1.2rem;">Presidency School Banashankari Digital Edition</p>
+        <p style="font-size:0.8rem; opacity:0.7;">Drag corners or use arrow keys to flip pages</p>
+      </div>
+    ` : `
+      <div style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
+        <h2 style="font-family:'Playfair Display'; color:#002B49;">Publication Article Page ${i}</h2>
+        <p style="line-height:1.8; text-align:justify;">Welcome to the interactive reader for INKSPIRE. This publication features high-resolution PDF rendering combined with real physical page turning mechanics.</p>
+        <div style="border-top:1px solid #DDD; padding-top:1rem; font-size:0.8rem; color:#666;">Page ${i}</div>
+      </div>
+    `;
+    DOM.flipbook.appendChild(pageDiv);
+  }
+
+  STATE.pageFlip = new window.St.PageFlip(DOM.flipbook, {
+    width: 500,
+    height: 700,
+    size: 'stretch',
+    showCover: true
+  });
+  STATE.pageFlip.loadFromHTML(document.querySelectorAll('#flipbook .page'));
+  DOM.loader.style.opacity = '0';
+  DOM.loader.style.visibility = 'hidden';
 }

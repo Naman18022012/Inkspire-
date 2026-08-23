@@ -1,11 +1,11 @@
 {
   "name": "INKSPIRE - Presidency School Banashankari",
   "short_name": "INKSPIRE",
-  "description": "Official Digital Newsletter of Presidency School Banashankari",
-  "start_url": "/index.html",
+  "description": "Official Digital Publication Reader of Presidency School Banashankari",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#061528",
-  "theme_color": "#0b2341",
+  "background_color": "#030A14",
+  "theme_color": "#001224",
   "icons": [
     {
       "src": "icon-192.png",
