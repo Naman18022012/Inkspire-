@@ -1,6 +1,6 @@
 /**
- * INKSPIRE - High-Performance Digital Magazine Reader Engine
- * Engine Architecture: PDF.js -> Page Dimension Auto-Fit -> St.PageFlip Engine
+ * INKSPIRE - Official Digital Reader Engine
+ * Presidency School Banashankari (PSBSK)
  */
 
 // Configure PDF.js Worker path
@@ -11,15 +11,14 @@ if (typeof pdfjsLib !== 'undefined') {
 
 // Global Application State
 const STATE = {
-  pdfUrl: 'newsletter.pdf', // Path to target PDF magazine file
+  pdfUrl: 'newsletter.pdf',
   pdfDoc: null,
   pageFlip: null,
   totalPages: 0,
   currentPage: 1,
   textIndex: [],
   zoomLevel: 1.0,
-  isZoomed: false,
-  aspectRatio: 0.75 // Standard 3:4 portrait ratio default
+  aspectRatio: 0.75
 };
 
 // DOM Cache
@@ -29,7 +28,6 @@ const DOM = {
   statusText: document.getElementById('loader-status'),
   landingView: document.getElementById('landing-view'),
   readerView: document.getElementById('reader-view'),
-  stage: document.getElementById('magazine-stage'),
   viewport: document.getElementById('stage-viewport'),
   flipbook: document.getElementById('flipbook'),
   inputPageNum: document.getElementById('input-page-num'),
@@ -47,9 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPublicationDocument();
 });
 
-/* 1. PDF DOCUMENT PIPELINE & ENGINE INITIALIZATION */
+/* 1. PDF PIPELINE & FLIPBOOK INITIALIZATION */
 async function loadPublicationDocument() {
-  updateProgress(15, 'Loading publication document...');
+  updateProgress(15, 'Loading PSBSK document...');
 
   try {
     const loadingTask = pdfjsLib.getDocument(STATE.pdfUrl);
@@ -57,7 +55,7 @@ async function loadPublicationDocument() {
     loadingTask.onProgress = (progress) => {
       if (progress.total > 0) {
         const percent = Math.round((progress.loaded / progress.total) * 40) + 15;
-        updateProgress(percent, 'Downloading issue content...');
+        updateProgress(percent, 'Downloading publication data...');
       }
     };
 
@@ -67,22 +65,15 @@ async function loadPublicationDocument() {
     DOM.lblTotalPages.textContent = `of ${STATE.totalPages}`;
     DOM.inputPageNum.max = STATE.totalPages;
 
-    // Get page aspect ratio from Page 1
     const firstPage = await STATE.pdfDoc.getPage(1);
     const viewport = firstPage.getViewport({ scale: 1.0 });
     STATE.aspectRatio = viewport.width / viewport.height;
 
     updateProgress(60, 'Rendering high-definition spreads...');
-
-    // Render Canvas elements for all pages
     await renderAllPages();
 
-    updateProgress(90, 'Initializing 3D page flip engine...');
-
-    // Initialize PageFlip
+    updateProgress(90, 'Initializing 3D flip engine...');
     initPageFlipEngine();
-
-    // Generate thumbnails for Contents drawer
     generateThumbnails();
 
     updateProgress(100, 'Ready');
@@ -93,12 +84,12 @@ async function loadPublicationDocument() {
     }, 300);
 
   } catch (error) {
-    console.warn('PDF load failed, starting procedural fallback render:', error);
+    console.warn('PDF load failed, rendering fallback view:', error);
     initProceduralFallback();
   }
 }
 
-/* 2. RENDER PDF PAGES TO DOM CANVAS ELEMENTS */
+/* 2. RENDER PAGES TO CANVAS */
 async function renderAllPages() {
   DOM.flipbook.innerHTML = '';
   const dpr = window.devicePixelRatio || 1.5;
@@ -121,12 +112,11 @@ async function renderAllPages() {
     pageWrapper.appendChild(canvas);
     DOM.flipbook.appendChild(pageWrapper);
 
-    // Index text content for full-text search engine
     indexPageText(page, pageNum);
   }
 }
 
-/* 3. CALCULATE MAXIMIZED FLIPBOOK DIMENSIONS & MOUNT ENGINE */
+/* 3. CALCULATE MAXIMIZED FLIPBOOK DIMENSIONS */
 function initPageFlipEngine() {
   const dims = calculateMaximizedDimensions();
 
@@ -142,32 +132,28 @@ function initPageFlipEngine() {
     showCover: true,
     usePortrait: window.innerWidth < 768,
     maxShadowOpacity: 0.5,
-    mobileScrollSupport: false,
     flippingTime: 800
   });
 
   STATE.pageFlip.loadFromHTML(document.querySelectorAll('#flipbook .page-wrapper'));
 
-  // Sync state on flip events
   STATE.pageFlip.on('flip', (e) => {
     STATE.currentPage = e.data + 1;
     DOM.inputPageNum.value = STATE.currentPage;
   });
 }
 
-/* Dynamic math to calculate max size fitting inside viewport */
 function calculateMaximizedDimensions() {
   const stageWidth = window.innerWidth;
-  const stageHeight = window.innerHeight - 48; // Less top header height
+  const stageHeight = window.innerHeight - 52;
 
   const isMobile = stageWidth < 768;
-  const availHeight = stageHeight - 40; // minimal dock margin
+  const availHeight = stageHeight - 40;
   const availWidth = isMobile ? stageWidth - 20 : stageWidth - 80;
 
   let pageHeight = availHeight;
   let pageWidth = Math.round(pageHeight * STATE.aspectRatio);
 
-  // If double-page spread exceeds screen width, recalculate based on width constraint
   if (!isMobile && (pageWidth * 2 > availWidth)) {
     pageWidth = Math.floor(availWidth / 2);
     pageHeight = Math.floor(pageWidth / STATE.aspectRatio);
@@ -176,7 +162,7 @@ function calculateMaximizedDimensions() {
   return { width: pageWidth, height: pageHeight };
 }
 
-/* 4. TEXT INDEXING & SEARCH SYSTEM */
+/* 4. SEARCH SYSTEM */
 async function indexPageText(pageObj, pageNum) {
   const textContent = await pageObj.getTextContent();
   const textString = textContent.items.map(item => item.str).join(' ');
@@ -210,7 +196,7 @@ function executeSearch(query) {
   }).join('');
 }
 
-/* 5. THUMBNAIL GRID GENERATOR */
+/* 5. THUMBNAILS GENERATOR */
 async function generateThumbnails() {
   DOM.thumbnailGrid.innerHTML = '';
   
@@ -239,15 +225,28 @@ async function generateThumbnails() {
   }
 }
 
-/* 6. CONTROL EVENT BINDINGS & HANDLERS */
+/* 6. EVENT BINDINGS */
 function setupEventListeners() {
-  // Navigation Transitions
+  // Navigation Event Bindings
+  document.getElementById('nav-brand-home')?.addEventListener('click', showLanding);
+  document.getElementById('nav-btn-issue')?.addEventListener('click', showLanding);
+  document.getElementById('nav-btn-archive')?.addEventListener('click', () => {
+    showLanding();
+    document.getElementById('archive-section')?.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('nav-btn-read-now')?.addEventListener('click', showReader);
   document.getElementById('btn-read-issue')?.addEventListener('click', showReader);
   document.getElementById('btn-browse-toc-landing')?.addEventListener('click', () => {
     showReader();
     toggleOverlay(DOM.tocOverlay);
   });
+
   document.getElementById('btn-back-landing')?.addEventListener('click', showLanding);
+  document.getElementById('footer-link-current')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showReader();
+  });
 
   // Flipbook Controls
   document.getElementById('btn-prev-page')?.addEventListener('click', () => STATE.pageFlip?.flipPrev());
@@ -255,26 +254,29 @@ function setupEventListeners() {
   document.getElementById('btn-dock-prev')?.addEventListener('click', () => STATE.pageFlip?.flipPrev());
   document.getElementById('btn-dock-next')?.addEventListener('click', () => STATE.pageFlip?.flipNext());
 
-  // Input Jump
   DOM.inputPageNum?.addEventListener('change', (e) => {
     const val = parseInt(e.target.value, 10);
     if (!isNaN(val)) jumpToPage(val);
   });
 
-  // Modal Toggles
+  // Overlays
   document.getElementById('btn-toc-toggle')?.addEventListener('click', () => toggleOverlay(DOM.tocOverlay));
   document.getElementById('btn-close-toc')?.addEventListener('click', closeOverlays);
   
   document.getElementById('btn-search-toggle')?.addEventListener('click', () => toggleOverlay(DOM.searchOverlay));
+  document.getElementById('nav-btn-search')?.addEventListener('click', () => {
+    showReader();
+    toggleOverlay(DOM.searchOverlay);
+  });
   document.getElementById('btn-close-search')?.addEventListener('click', closeOverlays);
 
   DOM.searchInput?.addEventListener('input', (e) => executeSearch(e.target.value));
 
-  // Zoom Handling
+  // Zoom
   document.getElementById('btn-zoom-in')?.addEventListener('click', () => handleZoom(0.2));
   document.getElementById('btn-zoom-out')?.addEventListener('click', () => handleZoom(-0.2));
 
-  // Fullscreen Handler
+  // Fullscreen
   document.getElementById('btn-fullscreen-toggle')?.addEventListener('click', () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => console.log(err));
@@ -283,7 +285,7 @@ function setupEventListeners() {
     }
   });
 
-  // Keyboard Shortcuts
+  // Keyboard Navigation
   document.addEventListener('keydown', (e) => {
     if (DOM.readerView.classList.contains('hidden')) return;
     if (e.key === 'ArrowLeft') STATE.pageFlip?.flipPrev();
@@ -295,10 +297,9 @@ function setupEventListeners() {
     }
   });
 
-  // Resize Handler
   window.addEventListener('resize', () => {
     if (STATE.pageFlip && !DOM.readerView.classList.contains('hidden')) {
-      const dims = calculateMaximizedDimensions();
+      calculateMaximizedDimensions();
       STATE.pageFlip.updateFromHTML(document.querySelectorAll('#flipbook .page-wrapper'));
     }
   });
@@ -343,7 +344,7 @@ function updateProgress(percent, text) {
   if (DOM.statusText) DOM.statusText.textContent = text;
 }
 
-/* Fallback procedural generator if local PDF is missing */
+/* Fallback procedural renderer if newsletter.pdf is missing */
 function initProceduralFallback() {
   STATE.totalPages = 4;
   DOM.lblTotalPages.textContent = `of ${STATE.totalPages}`;
@@ -352,21 +353,21 @@ function initProceduralFallback() {
   for (let i = 1; i <= 4; i++) {
     const pageWrapper = document.createElement('div');
     pageWrapper.className = 'page-wrapper';
-    pageWrapper.style.padding = '2rem';
-    pageWrapper.style.background = i === 1 ? '#001224' : '#FFFFFF';
+    pageWrapper.style.padding = '2.5rem';
+    pageWrapper.style.background = i === 1 ? '#002B49' : '#FFFFFF';
     pageWrapper.style.color = i === 1 ? '#FFFFFF' : '#0F172A';
 
     pageWrapper.innerHTML = i === 1 ? `
       <div style="height:100%; border:2px solid #C5A059; padding:2rem; display:flex; flex-direction:column; justify-content:space-between; text-align:center;">
-        <span style="font-family:'Plus Jakarta Sans'; font-size:0.8rem; color:#C5A059; letter-spacing:2px;">PRESIDENCY SCHOOL BANASHANKARI</span>
-        <h1 style="font-family:'Playfair Display'; font-size:3rem; color:#C5A059;">INKSPIRE</h1>
-        <p style="font-size:0.9rem; color:#94A3B8;">Drag corners or click side arrows to turn pages.</p>
+        <span style="font-size:0.75rem; color:#C5A059; letter-spacing:2px; font-weight:800;">PRESIDENCY SCHOOL BANASHANKARI</span>
+        <h1 style="font-family:'Playfair Display'; font-size:3.2rem; color:#C5A059;">INKSPIRE</h1>
+        <p style="font-size:0.85rem; color:#94A3B8;">August 2026 Edition • PSBSK</p>
       </div>
     ` : `
       <div style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
-        <h2 style="font-family:'Cormorant Garamond'; color:#001224; font-size:2rem;">Editorial Page ${i}</h2>
-        <p style="line-height:1.6; color:#475569; text-align:justify;">Welcome to the INKSPIRE digital reader platform. Place your custom publication named "newsletter.pdf" in the root directory to display your school magazine automatically.</p>
-        <div style="border-top:1px solid #E2E8F0; padding-top:0.5rem; font-size:0.75rem; color:#94A3B8;">Page ${i}</div>
+        <h2 style="font-family:'Cormorant Garamond'; color:#002B49; font-size:2.2rem;">Editorial Feature ${i}</h2>
+        <p style="line-height:1.6; color:#475569; text-align:justify;">Place your publication PDF named "newsletter.pdf" in the root directory to load the digital magazine pages automatically into the interactive flip reader.</p>
+        <div style="border-top:1px solid #E2E8F0; padding-top:0.5rem; font-size:0.75rem; color:#94A3B8;">PSBSK INKSPIRE • Page ${i}</div>
       </div>
     `;
     DOM.flipbook.appendChild(pageWrapper);

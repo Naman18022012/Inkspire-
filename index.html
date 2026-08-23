@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>INKSPIRE | Official Digital Publication of Presidency School Banashankari</title>
+  <title>INKSPIRE | Official Digital Publication of Presidency School Banashankari (PSBSK)</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23002B49'/><path d='M50 20 L80 35 L80 65 L50 80 L20 65 L20 35 Z' fill='none' stroke='%23C5A059' stroke-width='4'/><path d='M50 32 L68 42 L68 58 L50 68 L32 58 L32 42 Z' fill='%23C5A059'/></svg>">
 
   <!-- Typography & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,800;0,900;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- Core Stylesheet -->
@@ -20,105 +21,297 @@
 </head>
 <body>
 
-  <!-- 1. LOADING SCREEN -->
+  <!-- 1. EDITORIAL LOADING SYSTEM -->
   <div id="app-loader">
     <div class="loader-content">
-      <div class="loader-crest"><i class="fa-solid fa-feather-pointed"></i></div>
+      <div class="loader-crest">
+        <svg viewBox="0 0 100 100" class="crest-svg">
+          <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="#C5A059" stroke-width="3"/>
+          <path d="M50 15 L80 30 L80 70 L50 85 L20 70 L20 30 Z" fill="#002B49" stroke="#C5A059" stroke-width="1.5"/>
+          <text x="50" y="58" font-family="'Cormorant Garamond', serif" font-size="28" fill="#C5A059" text-anchor="middle" font-weight="700">P</text>
+        </svg>
+      </div>
       <span class="loader-school">PRESIDENCY SCHOOL BANASHANKARI</span>
       <h1 class="loader-title">INKSPIRE</h1>
+      <p class="loader-sub">OFFICIAL DIGITAL PUBLICATION</p>
       <div class="loader-progress-track">
         <div id="loader-progress-bar" class="loader-progress-bar"></div>
       </div>
-      <div id="loader-status" class="loader-status">Preparing digital publication...</div>
+      <div id="loader-status" class="loader-status">Initializing publication engine...</div>
     </div>
   </div>
 
-  <!-- 2. FRONT-PAGE EDITORIAL LANDING PAGE -->
-  <section id="landing-view" class="landing-view">
-    <header class="landing-header">
-      <div class="school-brand">
-        <i class="fa-solid fa-building-columns brand-icon"></i>
-        <div class="school-titles">
-          <span class="school-name">PRESIDENCY SCHOOL</span>
-          <span class="school-campus">BANASHANKARI</span>
+  <!-- 2. STICKY TOP NAVIGATION BAR -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="#" class="brand-link" id="nav-brand-home">
+        <div class="brand-crest">
+          <svg viewBox="0 0 100 100" class="mini-crest">
+            <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="#002B49" stroke="#C5A059" stroke-width="4"/>
+            <text x="50" y="62" font-family="'Cormorant Garamond', serif" font-size="42" fill="#C5A059" text-anchor="middle" font-weight="700">P</text>
+          </svg>
         </div>
-      </div>
-      <div class="edition-badge">OFFICIAL DIGITAL EDITION</div>
-    </header>
-
-    <main class="landing-hero">
-      <div class="hero-content">
-        <span class="issue-tag">VOL. IV • ISSUE 02 &nbsp;|&nbsp; AUGUST 2026</span>
-        <h1 class="hero-title">INKSPIRE</h1>
-        <p class="hero-subtitle">The Official Student Newspaper & Digital Publication Platform</p>
-        <p class="hero-description">
-          Inspiring young minds, celebrating artistic and academic excellence, and shaping tomorrow through student journalism and creative writing.
-        </p>
-
-        <div class="hero-actions">
-          <button id="btn-read-issue" class="btn btn-primary">
-            <i class="fa-solid fa-book-open"></i>
-            <span>READ THIS ISSUE</span>
-          </button>
-          <button id="btn-browse-toc-landing" class="btn btn-secondary">
-            <i class="fa-solid fa-grip-vertical"></i>
-            <span>CONTENTS</span>
-          </button>
+        <div class="brand-titles">
+          <span class="brand-school">PRESIDENCY SCHOOL</span>
+          <span class="brand-campus">BANASHANKARI (PSBSK)</span>
         </div>
+        <div class="brand-divider"></div>
+        <span class="brand-publication">INKSPIRE</span>
+      </a>
+
+      <nav class="nav-links">
+        <button id="nav-btn-issue" class="nav-link-btn active"><i class="fa-solid fa-book-open"></i> Current Issue</button>
+        <button id="nav-btn-archive" class="nav-link-btn"><i class="fa-solid fa-clock-rotate-left"></i> Previous Editions</button>
+        <button id="nav-btn-search" class="nav-link-btn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+      </nav>
+
+      <div class="header-cta">
+        <button id="nav-btn-read-now" class="btn btn-gold btn-sm">
+          <span>READ ISSUE</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. FRONT-PAGE EDITORIAL LANDING PAGE -->
+  <div id="landing-view" class="landing-view">
+    
+    <!-- Hero Editorial Cover Showcase -->
+    <section class="hero-editorial">
+      <div class="hero-backdrop">
+        <div class="hero-overlay"></div>
+        <img src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=2000&q=80" alt="Presidency School Campus" class="hero-bg-img">
       </div>
 
-      <!-- 3D Interactive Cover Presentation -->
-      <div class="hero-preview">
-        <div id="cover-card" class="cover-card">
-          <div class="cover-inner">
-            <span class="cover-school-tag">PRESIDENCY SCHOOL</span>
-            <h2 class="cover-masthead">INKSPIRE</h2>
-            <div class="cover-footer">
-              <span>AUGUST 2026</span>
-              <span>SPECIAL EDITION</span>
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="edition-pill">
+            <span class="pill-badge">OFFICIAL EDITION</span>
+            <span class="pill-date">VOL. IV • ISSUE 02 &nbsp;|&nbsp; AUGUST 2026</span>
+          </div>
+
+          <h1 class="hero-masthead">INKSPIRE</h1>
+          <p class="hero-motto">"Gain More Knowledge" — Presidency School Banashankari</p>
+          <p class="hero-lead">
+            The flagship digital publication capturing academic distinction, student journalism, creative arts, and institutional legacy across PSBSK.
+          </p>
+
+          <div class="hero-actions">
+            <button id="btn-read-issue" class="btn btn-gold btn-lg">
+              <i class="fa-solid fa-book-open"></i>
+              <span>READ LATEST ISSUE</span>
+            </button>
+            <button id="btn-browse-toc-landing" class="btn btn-outline-light btn-lg">
+              <i class="fa-solid fa-list-ul"></i>
+              <span>CONTENTS</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3D Front-Cover Showcase Card -->
+        <div class="hero-cover-wrapper">
+          <div id="cover-card" class="cover-card">
+            <div class="cover-frame">
+              <div class="cover-header">
+                <div class="cover-crest">
+                  <svg viewBox="0 0 100 100" class="mini-crest">
+                    <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="#C5A059" stroke-width="4"/>
+                    <text x="50" y="62" font-family="'Cormorant Garamond', serif" font-size="42" fill="#C5A059" text-anchor="middle" font-weight="700">P</text>
+                  </svg>
+                </div>
+                <span class="cover-school">PRESIDENCY SCHOOL</span>
+                <span class="cover-campus">BANASHANKARI</span>
+              </div>
+              
+              <div class="cover-body">
+                <span class="cover-vol">AUGUST 2026</span>
+                <h2 class="cover-title">INKSPIRE</h2>
+                <div class="cover-line"></div>
+                <p class="cover-tagline">ANNUAL ACADEMIC & CREATIVE COMPENDIUM</p>
+              </div>
+
+              <div class="cover-footer">
+                <span>SPECIAL EDITION</span>
+                <span>PSBSK DIGITAL</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
-  </section>
+    </section>
 
-  <!-- 3. MAIN MAGAZINE READER VIEW (MAXIMIZED VIEWPORT) -->
-  <main id="reader-view" class="reader-view hidden">
-    
-    <!-- Ultra-Compact Top Navigation Bar -->
-    <header class="reader-header">
-      <div class="header-left">
-        <button id="btn-back-landing" class="header-icon-btn" title="Return to Front Page">
-          <i class="fa-solid fa-arrow-left"></i>
-        </button>
-        <div class="header-brand">
-          <span class="brand-name">INKSPIRE</span>
-          <span class="brand-divider">•</span>
-          <span class="brand-sub">Presidency School</span>
+    <!-- 4. ARCHIVE / PREVIOUS EDITIONS SECTION -->
+    <section id="archive-section" class="archive-section">
+      <div class="section-container">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <span class="section-tag">PUBLICATIONS ARCHIVE</span>
+            <h2 class="section-title">Previous Editions</h2>
+          </div>
+          <p class="section-desc">Explore past issues of INKSPIRE published by Presidency School Banashankari.</p>
+        </div>
+
+        <div class="archive-grid">
+          
+          <!-- Issue Card 1 (Current) -->
+          <article class="issue-card active-edition">
+            <div class="issue-thumb-wrapper">
+              <div class="issue-badge">Latest</div>
+              <div class="issue-thumb-cover">
+                <span class="issue-thumb-school">PSBSK</span>
+                <h3 class="issue-thumb-title">INKSPIRE</h3>
+                <span class="issue-thumb-date">AUG 2026</span>
+              </div>
+            </div>
+            <div class="issue-meta">
+              <span class="issue-volume">Vol. IV • Issue 02</span>
+              <h4 class="issue-heading">August 2026 Edition</h4>
+              <p class="issue-excerpt">Celebrating Independence Day, mid-term academic milestones, and inter-school arts triumphs.</p>
+              <button class="btn-issue-open" onclick="showReader()"><i class="fa-solid fa-eye"></i> Read Edition</button>
+            </div>
+          </article>
+
+          <!-- Issue Card 2 -->
+          <article class="issue-card">
+            <div class="issue-thumb-wrapper">
+              <div class="issue-thumb-cover alt-cover-1">
+                <span class="issue-thumb-school">PSBSK</span>
+                <h3 class="issue-thumb-title">INKSPIRE</h3>
+                <span class="issue-thumb-date">JUL 2026</span>
+              </div>
+            </div>
+            <div class="issue-meta">
+              <span class="issue-volume">Vol. IV • Issue 01</span>
+              <h4 class="issue-heading">July 2026 Edition</h4>
+              <p class="issue-excerpt">Investiture Ceremony highlights, Student Council appointments, and sports achievements.</p>
+              <button class="btn-issue-open" onclick="showReader()"><i class="fa-solid fa-eye"></i> Read Edition</button>
+            </div>
+          </article>
+
+          <!-- Issue Card 3 -->
+          <article class="issue-card">
+            <div class="issue-thumb-wrapper">
+              <div class="issue-thumb-cover alt-cover-2">
+                <span class="issue-thumb-school">PSBSK</span>
+                <h3 class="issue-thumb-title">INKSPIRE</h3>
+                <span class="issue-thumb-date">JUN 2026</span>
+              </div>
+            </div>
+            <div class="issue-meta">
+              <span class="issue-volume">Vol. III • Issue 12</span>
+              <h4 class="issue-heading">June 2026 Edition</h4>
+              <p class="issue-excerpt">Welcoming the new academic session, faculty orientation, and campus infrastructure updates.</p>
+              <button class="btn-issue-open" onclick="showReader()"><i class="fa-solid fa-eye"></i> Read Edition</button>
+            </div>
+          </article>
+
+          <!-- Issue Card 4 -->
+          <article class="issue-card">
+            <div class="issue-thumb-wrapper">
+              <div class="issue-thumb-cover alt-cover-3">
+                <span class="issue-thumb-school">PSBSK</span>
+                <h3 class="issue-thumb-title">INKSPIRE</h3>
+                <span class="issue-thumb-date">MAY 2026</span>
+              </div>
+            </div>
+            <div class="issue-meta">
+              <span class="issue-volume">Vol. III • Issue 11</span>
+              <h4 class="issue-heading">May 2026 Edition</h4>
+              <p class="issue-excerpt">Summer enrichment programs, STEM innovation showcases, and literary festival awards.</p>
+              <button class="btn-issue-open" onclick="showReader()"><i class="fa-solid fa-eye"></i> Read Edition</button>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. INSTITUTIONAL EDITORIAL FOOTER -->
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-brand-col">
+          <div class="footer-crest">
+            <svg viewBox="0 0 100 100" class="mini-crest">
+              <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="#C5A059" stroke-width="4"/>
+              <text x="50" y="62" font-family="'Cormorant Garamond', serif" font-size="42" fill="#C5A059" text-anchor="middle" font-weight="700">P</text>
+            </svg>
+            <div class="footer-brand-text">
+              <span class="footer-school">PRESIDENCY SCHOOL</span>
+              <span class="footer-campus">BANASHANKARI (PSBSK)</span>
+            </div>
+          </div>
+          <p class="footer-motto-text">Promoting academic rigor, ethical leadership, and holistic growth through excellence in education.</p>
+        </div>
+
+        <div class="footer-links-col">
+          <h5 class="footer-col-title">OFFICIAL PORTALS</h5>
+          <ul class="footer-links">
+            <li><a href="https://presidencyschool.com" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> Presidency School Website</a></li>
+            <li><a href="#" id="footer-link-current"><i class="fa-solid fa-newspaper"></i> INKSPIRE Digital Reader</a></li>
+            <li><a href="#archive-section"><i class="fa-solid fa-box-archive"></i> Publications Archive</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-contact-col">
+          <h5 class="footer-col-title">CAMPUS LOCATION</h5>
+          <p class="footer-address">
+            <i class="fa-solid fa-location-dot"></i> Residency Campus, Banashankari 3rd Stage, Bengaluru, Karnataka, India
+          </p>
+          <p class="footer-contact-item"><i class="fa-solid fa-envelope"></i> inkspire@presidencyschool.com</p>
         </div>
       </div>
 
-      <div class="header-right">
-        <button id="btn-toc-toggle" class="header-tool-btn" title="Table of Contents (Thumbnails)">
-          <i class="fa-solid fa-grip"></i>
+      <div class="footer-bottom">
+        <div class="footer-bottom-container">
+          <p>&copy; 2026 Presidency School Banashankari (PSBSK). All Rights Reserved.</p>
+          <div class="footer-socials">
+            <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 6. READER VIEWPORT (MAXIMIZED VIEWPORT ENGINE) -->
+  <main id="reader-view" class="reader-view hidden">
+    
+    <!-- Reader Compact Navigation Header -->
+    <header class="reader-header">
+      <div class="reader-header-left">
+        <button id="btn-back-landing" class="btn-icon-reader" title="Return to Editorial Homepage">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div class="reader-brand">
+          <span class="r-brand-title">INKSPIRE</span>
+          <span class="r-brand-sub">PSBSK Issue 02 • August 2026</span>
+        </div>
+      </div>
+
+      <div class="reader-header-right">
+        <button id="btn-toc-toggle" class="btn-tool-reader" title="Table of Contents (Thumbnails)">
+          <i class="fa-solid fa-grip-vertical"></i>
           <span>Contents</span>
         </button>
-        <button id="btn-search-toggle" class="header-tool-btn" title="Search Text (Ctrl+F)">
+        <button id="btn-search-toggle" class="btn-tool-reader" title="Search Document (Ctrl+F)">
           <i class="fa-solid fa-magnifying-glass"></i>
           <span>Search</span>
         </button>
-        <div class="header-vdivider"></div>
-        <button id="btn-zoom-out" class="header-icon-btn" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-        <button id="btn-zoom-in" class="header-icon-btn" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-        <button id="btn-fullscreen-toggle" class="header-icon-btn" title="Toggle Fullscreen (F)"><i class="fa-solid fa-expand"></i></button>
+        
+        <div class="reader-vdivider"></div>
+        
+        <button id="btn-zoom-out" class="btn-icon-reader" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+        <button id="btn-zoom-in" class="btn-icon-reader" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+        <button id="btn-fullscreen-toggle" class="btn-icon-reader" title="Toggle Fullscreen (F)"><i class="fa-solid fa-expand"></i></button>
       </div>
     </header>
 
-    <!-- Hero Stage: Maximized Flipping Canvas -->
+    <!-- Maximized Interactive Magazine Canvas Stage -->
     <section id="magazine-stage" class="magazine-stage">
       <div id="stage-viewport" class="stage-viewport">
-        <!-- Dynamic StPageFlip container inserted here -->
         <div id="flipbook" class="flipbook-container"></div>
       </div>
 
@@ -143,32 +336,35 @@
     </nav>
   </main>
 
-  <!-- 4. OVERLAY: TABLE OF CONTENTS & THUMBNAILS -->
+  <!-- 7. OVERLAY: TABLE OF CONTENTS & THUMBNAILS -->
   <div id="toc-overlay" class="overlay-backdrop">
     <div class="overlay-panel toc-panel">
       <div class="panel-header">
         <div>
           <h3>Issue Contents</h3>
-          <p>Click any page thumbnail to open directly</p>
+          <p>Click any thumbnail to navigate directly</p>
         </div>
         <button id="btn-close-toc" class="panel-close-btn"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="thumbnail-grid" class="thumbnail-grid">
-        <!-- Rendered PDF Page Thumbnails dynamically inserted -->
+        <!-- PDF Page Thumbnails dynamically inserted -->
       </div>
     </div>
   </div>
 
-  <!-- 5. OVERLAY: FULL-TEXT PDF SEARCH -->
+  <!-- 8. OVERLAY: FULL-TEXT PDF SEARCH -->
   <div id="search-overlay" class="overlay-backdrop">
     <div class="overlay-panel search-panel">
       <div class="panel-header">
-        <h3>Search Issue</h3>
+        <div>
+          <h3>Search Issue</h3>
+          <p>Full-text keyword indexing across all pages</p>
+        </div>
         <button id="btn-close-search" class="panel-close-btn"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="search-input-wrapper">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input type="text" id="search-query-input" placeholder="Search keywords across all pages..." autocomplete="off">
+        <input type="text" id="search-query-input" placeholder="Search keywords in this edition..." autocomplete="off">
       </div>
       <div id="search-results-list" class="search-results-list">
         <div class="search-placeholder">Type a keyword above to search this publication.</div>
