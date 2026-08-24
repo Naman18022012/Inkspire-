@@ -1,317 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INKSPIRE | Official Digital Publication of Presidency School, Banashankari</title>
-    <meta name="description" content="INKSPIRE - The official digital school magazine and newspaper of Presidency School, Banashankari.">
-
-    <!-- Google Fonts: Playfair Display (Editorial Serif), Cinzel (Masthead), Plus Jakarta Sans (Clean UI) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- FontAwesome Icons for Reader UI -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- PDF.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    </script>
-
-    <!-- StPageFlip CDN for Real Physical Page Turning -->
-    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
-
-    <!-- App Styles -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INKSPIRE — Official Digital Magazine of Presidency School</title>
+  
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Icon Set -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/font/lucide.min.css">
+  
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- 1. LOADING SCREEN                          -->
-    <!-- ========================================== -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="loader-content">
-            <span class="loader-crest-text">PRESIDENCY SCHOOL, BANASHANKARI</span>
-            <h1 class="loader-title">INKSPIRE</h1>
-            <p class="loader-subtitle">Loading Digital Edition...</p>
-            <div class="loader-bar-container">
-                <div id="loader-progress" class="loader-bar"></div>
-            </div>
-            <div id="loader-status" class="loader-status-text">Preparing publication engine...</div>
-        </div>
-    </div>
+  <!-- Background Lighting Effects -->
+  <div class="ambient-background">
+    <div class="light-orb orb-1"></div>
+    <div class="light-orb orb-2"></div>
+  </div>
 
-    <!-- ========================================== -->
-    <!-- 2. EDITORIAL LANDING / COVER VIEW           -->
-    <!-- ========================================== -->
-    <div id="landing-view" class="landing-view">
+  <!-- Loading Experience Screen -->
+  <div id="loader" class="loader-overlay">
+    <div class="loader-content">
+      <span class="loader-school" id="cfg-loader-school">Presidency School</span>
+      <h1 class="loader-title" id="cfg-loader-title">INKSPIRE</h1>
+      <div class="loader-spinner-wrapper">
+        <div class="ring-loader"></div>
+      </div>
+      <p class="loader-text">Loading Digital Publication...</p>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero / Landing Page Overlay -->
+  <section id="landing-page" class="landing-page">
+    <header class="landing-header">
+      <div class="brand-badge">
+        <span class="badge-dot"></span>
+        <span id="cfg-landing-school">Presidency School</span>
+      </div>
+    </header>
+
+    <main class="landing-hero">
+      <div class="hero-typography">
+        <h1 class="hero-title" id="cfg-landing-title">INKSPIRE</h1>
+        <p class="hero-subtitle" id="cfg-landing-subtitle">Official Digital Magazine</p>
+        <p class="hero-meta">
+          <span id="cfg-landing-volume">Volume IV</span> &nbsp;•&nbsp; <span id="cfg-landing-date">August 2026</span>
+        </p>
         
-        <!-- Top Institutional Header Bar -->
-        <header class="institution-header">
-            <div class="header-inner">
-                <div class="school-identity">
-                    <span class="school-badge">OFFICIAL PUBLICATION</span>
-                    <span class="school-name">PRESIDENCY SCHOOL, BANASHANKARI</span>
-                </div>
-                <div class="issue-meta">
-                    <span class="meta-item"><i class="fa-solid fa-calendar-days"></i> ANNUAL EDITION 2025–2026</span>
-                    <span class="meta-divider">•</span>
-                    <span class="meta-item">ISSUE 01 • VOL. I</span>
-                </div>
-            </div>
-        </header>
+        <p class="hero-tagline" id="cfg-landing-tagline">
+          Inspiring Minds. Celebrating Excellence. Building Tomorrow.
+        </p>
 
-        <!-- Main Publication Banner / Masthead -->
-        <section class="masthead-section">
-            <div class="masthead-container">
-                <div class="masthead-top-line">
-                    <span>ACADEMIC JOURNAL &amp; STUDENT CHRONICLE</span>
-                    <span>BANGALORE, INDIA</span>
-                </div>
-                
-                <h1 class="main-masthead-title">INKSPIRE</h1>
-                
-                <div class="masthead-bottom-line">
-                    <span>THE VOICE OF PRESIDENCY SCHOOL BANASHANKARI</span>
-                    <span>SPECIAL DIGITAL SPORTS DAY &amp; ANNUAL EDITION</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Editorial Hero Area -->
-        <main class="landing-content">
-            <div class="landing-grid">
-                
-                <!-- Left Column: Lead Stories & Editorial Intro -->
-                <article class="editorial-col left-col">
-                    <div class="editorial-box">
-                        <span class="editorial-label">EDITOR'S NOTE</span>
-                        <h2 class="editorial-headline">A New Chapter in Digital Student Journalism</h2>
-                        <p class="editorial-excerpt">
-                            Welcome to the inauguration of <strong>INKSPIRE</strong> — Presidency School Banashankari’s premier digital publication. Engineered for immersive reading, this edition captures our academic achievements, literary creations, sporting triumphs, and the vibrant spirit of our school community.
-                        </p>
-                    </div>
-
-                    <div class="highlights-box">
-                        <span class="editorial-label">INSIDE THIS ISSUE</span>
-                        <ul class="highlights-list">
-                            <li>
-                                <span class="hl-num">01</span>
-                                <div class="hl-text">
-                                    <strong>Sports Day Extravaganza</strong>
-                                    <p>Comprehensive coverage &amp; photo gallery of the annual athletic meet.</p>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="hl-num">02</span>
-                                <div class="hl-text">
-                                    <strong>Academic Milestones</strong>
-                                    <p>Celebrating excellence, science expos &amp; national awards.</p>
-                                </div>
-                            </li>
-                            <li>
-                                <span class="hl-num">03</span>
-                                <div class="hl-text">
-                                    <strong>Creative Ink &amp; Canvas</strong>
-                                    <p>Student poetry, original artwork, short stories, and opinion pieces.</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </article>
-
-                <!-- Center Column: Large Magazine Cover Showcase -->
-                <div class="cover-showcase-col">
-                    <div class="cover-frame-wrapper" id="cover-frame-click">
-                        <div class="cover-badge">SPECIAL EDITION</div>
-                        <div class="cover-canvas-container" id="landing-cover-container">
-                            <!-- Rendered cover canvas will be injected here -->
-                            <div class="cover-placeholder">
-                                <div class="placeholder-content">
-                                    <h2>INKSPIRE</h2>
-                                    <p>Click below to open the digital reader</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cover-shadow"></div>
-                    </div>
-
-                    <div class="primary-actions">
-                        <button id="btn-open-reader" class="btn-primary-read">
-                            <i class="fa-solid fa-book-open-reader"></i> READ ISSUE
-                        </button>
-                        <button id="btn-open-toc-landing" class="btn-secondary-toc">
-                            <i class="fa-solid fa-list-ul"></i> TABLE OF CONTENTS
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Right Column: School Pride & Edition Specs -->
-                <article class="editorial-col right-col">
-                    <div class="edition-card">
-                        <span class="editorial-label">PUBLICATION INFO</span>
-                        <div class="info-row">
-                            <span class="info-key">Publisher</span>
-                            <span class="info-val">Presidency School, BSK</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-key">Format</span>
-                            <span class="info-val">Interactive Digital Magazine</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-key">Pages</span>
-                            <span class="info-val" id="info-page-count">Loading...</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-key">Platform</span>
-                            <span class="info-val">INKSPIRE Digital Reader</span>
-                        </div>
-                    </div>
-
-                    <div class="quote-box">
-                        <i class="fa-solid fa-quote-left quote-icon"></i>
-                        <p class="quote-text">
-                            "Inspiring young minds to think, create, and lead through the power of written expression."
-                        </p>
-                        <span class="quote-author">— Presidency Editorial Board</span>
-                    </div>
-
-                    <div class="presentation-note">
-                        <i class="fa-solid fa-display"></i>
-                        <span>Optimized for large-screen presentation and high-resolution viewing.</span>
-                    </div>
-                </article>
-
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="publication-footer">
-            <p>&copy; 2026 INKSPIRE • Presidency School, Banashankari. All Rights Reserved.</p>
-        </footer>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- 3. IMMERSIVE DIGITAL MAGAZINE READER       -->
-    <!-- ========================================== -->
-    <div id="reader-view" class="reader-view hidden">
-        
-        <!-- Reader Navigation Toolbar -->
-        <nav class="reader-toolbar" id="reader-toolbar">
-            <!-- Left: Brand & Exit -->
-            <div class="toolbar-left">
-                <button id="btn-exit-reader" class="tb-btn tb-btn-back" title="Return to Landing Page">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span class="tb-btn-text">Cover</span>
-                </button>
-                <div class="toolbar-brand">
-                    <span class="tb-title">INKSPIRE</span>
-                    <span class="tb-tag">PRESIDENCY BSK</span>
-                </div>
-            </div>
-
-            <!-- Center: Page Controls -->
-            <div class="toolbar-center">
-                <button id="btn-first-page" class="tb-btn tb-icon-only" title="First Page">
-                    <i class="fa-solid fa-angles-left"></i>
-                </button>
-                <button id="btn-prev-page" class="tb-btn tb-nav-arrow" title="Previous Page (Left Arrow)">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-                
-                <div class="page-counter-box">
-                    <span>Page</span>
-                    <input type="number" id="input-page-num" min="1" value="1" aria-label="Current Page">
-                    <span id="label-total-pages">/ --</span>
-                </div>
-
-                <button id="btn-next-page" class="tb-btn tb-nav-arrow" title="Next Page (Right Arrow)">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-                <button id="btn-last-page" class="tb-btn tb-icon-only" title="Last Page">
-                    <i class="fa-solid fa-angles-right"></i>
-                </button>
-            </div>
-
-            <!-- Right: Features, Zoom & Fullscreen -->
-            <div class="toolbar-right">
-                <button id="btn-toggle-search" class="tb-btn" title="Search Issue (Ctrl+F)">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <span class="tb-btn-text">Search</span>
-                </button>
-
-                <button id="btn-toggle-toc" class="tb-btn" title="Thumbnails &amp; Table of Contents">
-                    <i class="fa-solid fa-table-cells"></i>
-                    <span class="tb-btn-text">Pages</span>
-                </button>
-
-                <div class="zoom-controls">
-                    <button id="btn-zoom-out" class="tb-btn tb-icon-only" title="Zoom Out">
-                        <i class="fa-solid fa-minus"></i>
-                    </button>
-                    <span id="zoom-level-indicator" class="zoom-text">100%</span>
-                    <button id="btn-zoom-in" class="tb-btn tb-icon-only" title="Zoom In">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                    <button id="btn-zoom-reset" class="tb-btn tb-icon-only" title="Reset Zoom">
-                        <i class="fa-solid fa-compress"></i>
-                    </button>
-                </div>
-
-                <button id="btn-toggle-fullscreen" class="tb-btn tb-icon-only" title="Toggle Fullscreen (F)">
-                    <i class="fa-solid fa-expand" id="icon-fullscreen"></i>
-                </button>
-            </div>
-        </nav>
-
-        <!-- Flipbook Container Frame -->
-        <main class="reader-stage" id="reader-stage">
-            <div class="flipbook-viewport" id="flipbook-viewport">
-                <!-- StPageFlip renders target elements inside here -->
-                <div id="flipbook-container" class="flipbook-container">
-                    <!-- Dynamic page elements injected by script.js -->
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- 4. SEARCH OVERLAY / MODAL                  -->
-    <!-- ========================================== -->
-    <div id="search-modal" class="modal-overlay hidden">
-        <div class="modal-card search-card">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-magnifying-glass"></i> Search INKSPIRE</h3>
-                <button id="btn-close-search" class="modal-close-btn">&times;</button>
-            </div>
-            <div class="search-input-wrapper">
-                <input type="text" id="search-input" placeholder="Search keywords, articles, student names..." autocomplete="off">
-                <button id="btn-clear-search"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="search-results-container" class="search-results-list">
-                <p class="search-empty-prompt">Type a search query above to find text across all pages.</p>
-            </div>
+        <div class="hero-actions">
+          <button id="btn-open-magazine" class="btn btn-primary">
+            <span>Open Magazine</span>
+            <i class="icon-arrow-right"></i>
+          </button>
+          <button id="btn-browse-contents" class="btn btn-secondary">
+            <i class="icon-layout-grid"></i>
+            <span>Browse Contents</span>
+          </button>
         </div>
-    </div>
+      </div>
 
-    <!-- ========================================== -->
-    <!-- 5. TABLE OF CONTENTS / THUMBNAILS DRAWER   -->
-    <!-- ========================================== -->
-    <div id="toc-modal" class="modal-overlay hidden">
-        <div class="modal-card toc-card">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-table-cells"></i> Page Thumbnails &amp; Navigation</h3>
-                <button id="btn-close-toc" class="modal-close-btn">&times;</button>
+      <!-- 3D Floating Mockup -->
+      <div class="hero-visual">
+        <div class="magazine-mockup-wrapper">
+          <div class="magazine-mockup-3d">
+            <div class="cover-glare"></div>
+            <div class="cover-content">
+              <span class="cover-school">Presidency School</span>
+              <h2 class="cover-title">INKSPIRE</h2>
+              <span class="cover-vol" id="cfg-cover-vol">Volume IV</span>
             </div>
-            <div id="thumbnails-grid" class="thumbnails-grid">
-                <!-- Page thumbnails generated dynamically -->
-            </div>
+            <div class="magazine-spine"></div>
+          </div>
+          <div class="mockup-shadow"></div>
         </div>
-    </div>
+      </div>
+    </main>
+  </section>
 
-    <!-- Custom App Script -->
-    <script src="script.js"></script>
+  <!-- Main Digital Reader Interface -->
+  <div id="reader-interface" class="reader-interface hidden">
+    <!-- Top Floating Navigation Bar -->
+    <header class="reader-topbar">
+      <div class="topbar-left">
+        <button id="btn-back-home" class="icon-btn" title="Return to Home">
+          <i class="icon-chevron-left"></i>
+        </button>
+        <div class="topbar-brand">
+          <span class="topbar-school" id="cfg-topbar-school">Presidency School</span>
+          <span class="topbar-title" id="cfg-topbar-title">INKSPIRE</span>
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <div class="page-indicator">
+          <span id="current-page-num">1</span>
+          <span class="divider">/</span>
+          <span id="total-pages-num">--</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button id="btn-toggle-toc" class="tool-btn" title="Table of Contents">
+          <i class="icon-book-open"></i>
+          <span class="btn-label">Contents</span>
+        </button>
+        <button id="btn-toggle-search" class="tool-btn" title="Search Document">
+          <i class="icon-search"></i>
+          <span class="btn-label">Search</span>
+        </button>
+        <div class="vertical-divider"></div>
+        <button id="btn-zoom-out" class="icon-btn" title="Zoom Out"><i class="icon-zoom-out"></i></button>
+        <button id="btn-zoom-in" class="icon-btn" title="Zoom In"><i class="icon-zoom-in"></i></button>
+        <button id="btn-fullscreen" class="icon-btn" title="Toggle Fullscreen"><i class="icon-maximize"></i></button>
+      </div>
+    </header>
+
+    <!-- PageFlip Canvas / Container Wrapper -->
+    <main class="flipbook-viewport" id="viewport">
+      <div id="flipbook-stage" class="flipbook-stage">
+        <!-- PageFlip.js injects DOM elements here -->
+        <div id="book" class="st-page-flip"></div>
+      </div>
+      
+      <!-- Side Navigation Handles -->
+      <button id="btn-prev-page" class="nav-arrow nav-prev" aria-label="Previous Page">
+        <i class="icon-chevron-left"></i>
+      </button>
+      <button id="btn-next-page" class="nav-arrow nav-next" aria-label="Next Page">
+        <i class="icon-chevron-right"></i>
+      </button>
+    </main>
+  </div>
+
+  <!-- Table of Contents Modal Window -->
+  <div id="toc-modal" class="modal-overlay hidden">
+    <div class="modal-window toc-window">
+      <header class="modal-header">
+        <h3>Table of Contents</h3>
+        <button id="btn-close-toc" class="icon-btn close-btn"><i class="icon-x"></i></button>
+      </header>
+      <div class="modal-body">
+        <div id="toc-grid" class="toc-grid">
+          <!-- Dynamic cards injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Search Overlay -->
+  <div id="search-modal" class="modal-overlay hidden">
+    <div class="modal-window search-window">
+      <header class="modal-header">
+        <div class="search-input-wrapper">
+          <i class="icon-search search-icon"></i>
+          <input type="text" id="search-input" placeholder="Search publication..." autocomplete="off">
+          <button id="btn-clear-search" class="icon-btn hidden"><i class="icon-x"></i></button>
+        </div>
+        <button id="btn-close-search" class="icon-btn close-btn"><i class="icon-x"></i></button>
+      </header>
+      <div class="modal-body">
+        <div id="search-results-list" class="search-results-list">
+          <div class="search-empty-state">Enter keywords above to query the document.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dependencies & Main Script -->
+  <script src="config.js"></script>
+  <!-- Keep existing PDF.js & PageFlip.js script imports here -->
+  <script src="app.js"></script>
 </body>
 </html>
