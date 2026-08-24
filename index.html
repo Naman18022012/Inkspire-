@@ -5,26 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>School Newsletter - Digital Flipbook</title>
 
-    <!-- PWA & Mobile Meta Tags -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#1a1a1e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./style.css">
 
     <!-- External Open Source Libraries -->
-    <!-- PDF.js for dynamic PDF reading -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
-    <!-- StPageFlip for realistic 3D paper page turns -->
     <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 </head>
 <body>
 
-    <!-- Minimal Header / Floating Controls -->
     <header class="app-header">
         <div class="brand-title">School Gazette</div>
         <div class="header-controls">
@@ -40,7 +35,6 @@
         </div>
     </header>
 
-    <!-- Main Flipbook Container Stage -->
     <main class="viewport-stage" id="zoom-stage">
         <div class="loading-overlay" id="loader">
             <div class="spinner"></div>
@@ -52,12 +46,10 @@
         </div>
     </main>
 
-    <!-- Minimal Footer Indicator -->
     <footer class="app-footer">
         <span id="page-indicator">Page -- of --</span>
     </footer>
 
-    <!-- Search Modal Drawer -->
     <div class="modal" id="search-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -71,7 +63,6 @@
         </div>
     </div>
 
-    <!-- Table of Contents Modal Drawer -->
     <div class="modal" id="toc-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -82,9 +73,8 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
     <script>
-        // Register Service Worker for Offline PWA support
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')

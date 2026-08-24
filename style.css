@@ -1,4 +1,3 @@
-/* Core Styling & Neutral Modern Aesthetics */
 :root {
     --bg-color: #e5e5eb;
     --header-bg: rgba(255, 255, 255, 0.75);
@@ -25,7 +24,6 @@ body, html {
     color: var(--text-color);
 }
 
-/* Header Navbar */
 .app-header {
     position: fixed;
     top: 0;
@@ -71,7 +69,6 @@ body, html {
     background: rgba(0, 0, 0, 0.05);
 }
 
-/* Stage Area & Container */
 .viewport-stage {
     width: 100vw;
     height: 100vh;
@@ -90,7 +87,6 @@ body, html {
     transform-origin: center center;
 }
 
-/* StPageFlip standard container styling overrides */
 #flipbook {
     margin: 0 auto;
 }
@@ -106,7 +102,6 @@ body, html {
     object-fit: contain;
 }
 
-/* Loader Overlay */
 .loading-overlay {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -133,7 +128,6 @@ body, html {
     to { transform: rotate(360deg); }
 }
 
-/* Footer Indicator */
 .app-footer {
     position: fixed;
     bottom: 0;
@@ -149,7 +143,6 @@ body, html {
     z-index: 90;
 }
 
-/* Modal Windows */
 .modal {
     display: none;
     position: fixed;
