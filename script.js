@@ -1,20 +1,307 @@
 /**
- * INKSPIRE - Dynamic Configuration Object
- * Edit magazine details, volume, and theme presets here.
+ * Digital Flipbook Core Application Framework
+ * Integrates StPageFlip and PDF.js for seamless document viewing
  */
-const MAGAZINE_CONFIG = {
-  title: "INKSPIRE",
-  schoolName: "Presidency School",
-  subTitle: "Official Digital Magazine of Presidency School",
-  volume: "Volume IV",
-  issueDate: "August 2026",
-  tagline: "Inspiring Minds. Celebrating Excellence. Building Tomorrow.",
-  pdfUrl: "pdf/inkspire-august-2026.pdf", // Path to your source PDF
-  
-  // Theme Overrides (if required programmatically)
-  colors: {
-    primaryGreen: "#0B2B22",
-    accentGold: "#C5A059",
-    bgLight: "#F8FAF8",
-  }
-};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Configuration Settings
+    const CONFIG = {
+        pdfPath: './pages/document.pdf', // Path to default PDF asset
+        pageDimensions: { width: 550, height: 733 }, // Aspect ratio standard (A4 derivative)
+        singlePageModeWidthCutoff: 768
+    };
+
+    // State Variables
+    let pageFlip = null;
+    let pdfDoc = null;
+    let zoomLevel = 1;
+    let currentPageIndex = 0;
+    let textContentCache = [];
+
+    // DOM References
+    const loader = document.getElementById('loader');
+    const loaderStatus = document.getElementById('loader-status');
+    const pageIndicator = document.getElementById('page-indicator');
+    const flipbookElem = document.getElementById('flipbook');
+    const zoomStage = document.getElementById('zoom-stage');
+
+    // Init Logic
+    initApplication();
+
+    async function initApplication() {
+        try {
+            // Check if PDF exists; otherwise, fallback to sequential dynamic image search
+            const response = await fetch(CONFIG.pdfPath, { method: 'HEAD' });
+            if (response.ok) {
+                await loadPDF(CONFIG.pdfPath);
+            } else {
+                await loadFallbackImages();
+            }
+            setupEventListeners();
+        } catch (error) {
+            console.warn('PDF fetch error. Defaulting to dynamic image directory checks...', error);
+            await loadFallbackImages();
+            setupEventListeners();
+        }
+    }
+
+    /**
+     * PDF Renderer using PDF.js
+     */
+    async function loadPDF(url) {
+        loaderStatus.innerText = "Loading newsletter PDF...";
+        pdfDoc = await pdfjsLib.getDocument(url).promise;
+        const totalPages = pdfDoc.numPages;
+
+        flipbookElem.innerHTML = ''; // Clear container
+
+        // Pre-create element DOM nodes for each page
+        for (let i = 1; i <= totalPages; i++) {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'page';
+            pageDiv.dataset.pageNumber = i;
+            
+            const canvas = document.createElement('canvas');
+            pageDiv.appendChild(canvas);
+            flipbookElem.appendChild(pageDiv);
+
+            // Fetch and render individual page onto Canvas
+            await renderPDFPage(i, canvas);
+            loaderStatus.innerText = `Rendered page ${i} of ${totalPages}`;
+        }
+
+        buildFlipbook();
+        cachePDFText(totalPages);
+    }
+
+    async function renderPDFPage(pageNum, canvas) {
+        const page = await pdfDoc.getPage(pageNum);
+        const viewport = page.getViewport({ scale: 1.5 }); // HiDPI scaling multiplier
+        const context = canvas.getContext('2d');
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+        };
+        await page.render(renderContext).promise;
+    }
+
+    /**
+     * Pre-cache PDF layout text for dynamic search
+     */
+    async function cachePDFText(totalPages) {
+        for (let i = 1; i <= totalPages; i++) {
+            const page = await pdfDoc.getPage(i);
+            const textContent = await page.getTextContent();
+            const textString = textContent.items.map(item => item.str).join(' ');
+            textContentCache.push({ page: i, text: textString });
+        }
+        buildTableOfContents(totalPages);
+    }
+
+    /**
+     * Fallback strategy: Image loading directory check (page-1.png, page-2.png...)
+     */
+    async function loadFallbackImages() {
+        loaderStatus.innerText = "Loading image pages...";
+        flipbookElem.innerHTML = '';
+        let pageNum = 1;
+        let active = true;
+
+        while (active && pageNum <= 100) { // Safety ceiling: 100 pages maximum
+            const imgPath = `./pages/page-${pageNum}.png`;
+            const exists = await checkImageExists(imgPath);
+            
+            if (exists) {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'page';
+                const img = document.createElement('img');
+                img.src = imgPath;
+                img.alt = `Page ${pageNum}`;
+                pageDiv.appendChild(img);
+                flipbookElem.appendChild(pageDiv);
+                pageNum++;
+            } else {
+                active = false;
+            }
+        }
+
+        if (pageNum === 1) {
+            // Render basic structural dummy cover if no dynamic assets exist yet
+            renderDummyCover();
+        } else {
+            buildFlipbook();
+        }
+    }
+
+    function checkImageExists(url) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = url;
+        });
+    }
+
+    function renderDummyCover() {
+        flipbookElem.innerHTML = `
+            <div class="page" style="display:flex;align-items:center;justify-content:center;background:#003366;color:white;">
+                <div style="text-align:center;padding:20px;">
+                    <h2>School Newsletter</h2>
+                    <p style="margin-top:10px;">Issue #1</p>
+                    <small style="margin-top:20px;display:block;opacity:0.7">Place document.pdf inside /pages folder</small>
+                </div>
+            </div>
+            <div class="page" style="display:flex;align-items:center;justify-content:center;background:#fff;">
+                <p>Welcome to our interactive newsletter engine.</p>
+            </div>
+        `;
+        buildFlipbook();
+    }
+
+    /**
+     * StPageFlip Realistic Physics Initialization
+     */
+    function buildFlipbook() {
+        const isMobile = window.innerWidth < CONFIG.singlePageModeWidthCutoff;
+
+        pageFlip = new St.PageFlip(flipbookElem, {
+            width: CONFIG.pageDimensions.width,
+            height: CONFIG.pageDimensions.height,
+            size: "stretch",
+            minWidth: 300,
+            maxWidth: 1000,
+            minHeight: 400,
+            maxHeight: 1400,
+            maxShadowOpacity: 0.5, // Natural paper folding dynamic shading
+            showCover: true,
+            mobileScrollSupport: false,
+            usePortrait: isMobile
+        });
+
+        pageFlip.loadFromHTML(document.querySelectorAll('#flipbook .page'));
+
+        // Event Listeners for Page Turn Actions
+        pageFlip.on('flip', (e) => {
+            currentPageIndex = e.data;
+            updatePageIndicator();
+        });
+
+        // Hide Loading Indicator
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 400);
+
+        updatePageIndicator();
+    }
+
+    function updatePageIndicator() {
+        if (!pageFlip) return;
+        const total = pageFlip.getPageCount();
+        const current = pageFlip.getCurrentPageIndex() + 1;
+        pageIndicator.innerText = `Page ${current} of ${total}`;
+    }
+
+    /**
+     * Global Event Handlers & Interactions
+     */
+    function setupEventListeners() {
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') pageFlip.flipNext();
+            if (e.key === 'ArrowLeft') pageFlip.flipPrev();
+            if (e.key === 'Escape') resetZoom();
+        });
+
+        // Fullscreen Mode Handler
+        document.getElementById('btn-fullscreen').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        });
+
+        // Double Click Zoom Setup
+        zoomStage.addEventListener('dblclick', (e) => {
+            if (zoomLevel === 1) {
+                zoomLevel = 2;
+                zoomStage.querySelector('.flipbook-wrapper').style.transform = `scale(${zoomLevel})`;
+            } else {
+                resetZoom();
+            }
+        });
+
+        // Modals Management
+        const searchModal = document.getElementById('search-modal');
+        const tocModal = document.getElementById('toc-modal');
+
+        document.getElementById('btn-search').addEventListener('click', () => searchModal.classList.add('active'));
+        document.getElementById('close-search').addEventListener('click', () => searchModal.classList.remove('active'));
+
+        document.getElementById('btn-toc').addEventListener('click', () => tocModal.classList.add('active'));
+        document.getElementById('close-toc').addEventListener('click', () => tocModal.classList.remove('active'));
+
+        // Text Search Functionality
+        document.getElementById('search-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.toLowerCase().trim();
+                executeSearch(query);
+            }
+        });
+    }
+
+    function resetZoom() {
+        zoomLevel = 1;
+        zoomStage.querySelector('.flipbook-wrapper').style.transform = `scale(1)`;
+    }
+
+    function executeSearch(query) {
+        const resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '';
+
+        if (!query) return;
+
+        const matches = textContentCache.filter(item => item.text.toLowerCase().includes(query));
+
+        if (matches.length === 0) {
+            resultsContainer.innerHTML = '<p class="search-item">No matches found.</p>';
+            return;
+        }
+
+        matches.forEach(match => {
+            const div = document.createElement('div');
+            div.className = 'search-item';
+            div.innerText = `Page ${match.page}: "...${snippet(match.text, query)}..."`;
+            div.addEventListener('click', () => {
+                pageFlip.flip(match.page - 1);
+                document.getElementById('search-modal').classList.remove('active');
+            });
+            resultsContainer.appendChild(div);
+        });
+    }
+
+    function snippet(text, query) {
+        const index = text.toLowerCase().indexOf(query);
+        const start = Math.max(0, index - 20);
+        const end = Math.min(text.length, index + query.length + 20);
+        return text.substring(start, end);
+    }
+
+    function buildTableOfContents(total) {
+        const tocList = document.getElementById('toc-list');
+        tocList.innerHTML = '';
+        for (let i = 1; i <= total; i++) {
+            const item = document.createElement('li');
+            item.className = 'toc-item';
+            item.innerText = `Page ${i}`;
+            item.addEventListener('click', () => {
+                pageFlip.turnToPage(i - 1);
+                document.getElementById('toc-modal').classList.remove('active');
+            });
+            tocList.appendChild(item);
+        }
+    }
+});

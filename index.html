@@ -1,186 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>INKSPIRE — Official Digital Magazine of Presidency School</title>
-  
-  <!-- Premium Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Icon Set -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/font/lucide.min.css">
-  
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>School Newsletter - Digital Flipbook</title>
+
+    <!-- PWA & Mobile Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- External Open Source Libraries -->
+    <!-- PDF.js for dynamic PDF reading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <!-- StPageFlip for realistic 3D paper page turns -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 </head>
 <body>
 
-  <!-- Background Lighting Effects -->
-  <div class="ambient-background">
-    <div class="light-orb orb-1"></div>
-    <div class="light-orb orb-2"></div>
-  </div>
-
-  <!-- Loading Experience Screen -->
-  <div id="loader" class="loader-overlay">
-    <div class="loader-content">
-      <span class="loader-school" id="cfg-loader-school">Presidency School</span>
-      <h1 class="loader-title" id="cfg-loader-title">INKSPIRE</h1>
-      <div class="loader-spinner-wrapper">
-        <div class="ring-loader"></div>
-      </div>
-      <p class="loader-text">Loading Digital Publication...</p>
-      <div class="progress-bar-container">
-        <div class="progress-bar-fill" id="progress-bar"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Hero / Landing Page Overlay -->
-  <section id="landing-page" class="landing-page">
-    <header class="landing-header">
-      <div class="brand-badge">
-        <span class="badge-dot"></span>
-        <span id="cfg-landing-school">Presidency School</span>
-      </div>
+    <!-- Minimal Header / Floating Controls -->
+    <header class="app-header">
+        <div class="brand-title">School Gazette</div>
+        <div class="header-controls">
+            <button id="btn-toc" title="Table of Contents" class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </button>
+            <button id="btn-search" title="Search Text" class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+            <button id="btn-fullscreen" title="Toggle Fullscreen" class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+        </div>
     </header>
 
-    <main class="landing-hero">
-      <div class="hero-typography">
-        <h1 class="hero-title" id="cfg-landing-title">INKSPIRE</h1>
-        <p class="hero-subtitle" id="cfg-landing-subtitle">Official Digital Magazine</p>
-        <p class="hero-meta">
-          <span id="cfg-landing-volume">Volume IV</span> &nbsp;•&nbsp; <span id="cfg-landing-date">August 2026</span>
-        </p>
-        
-        <p class="hero-tagline" id="cfg-landing-tagline">
-          Inspiring Minds. Celebrating Excellence. Building Tomorrow.
-        </p>
-
-        <div class="hero-actions">
-          <button id="btn-open-magazine" class="btn btn-primary">
-            <span>Open Magazine</span>
-            <i class="icon-arrow-right"></i>
-          </button>
-          <button id="btn-browse-contents" class="btn btn-secondary">
-            <i class="icon-layout-grid"></i>
-            <span>Browse Contents</span>
-          </button>
+    <!-- Main Flipbook Container Stage -->
+    <main class="viewport-stage" id="zoom-stage">
+        <div class="loading-overlay" id="loader">
+            <div class="spinner"></div>
+            <p id="loader-status">Preparing digital publication...</p>
         </div>
-      </div>
 
-      <!-- 3D Floating Mockup -->
-      <div class="hero-visual">
-        <div class="magazine-mockup-wrapper">
-          <div class="magazine-mockup-3d">
-            <div class="cover-glare"></div>
-            <div class="cover-content">
-              <span class="cover-school">Presidency School</span>
-              <h2 class="cover-title">INKSPIRE</h2>
-              <span class="cover-vol" id="cfg-cover-vol">Volume IV</span>
+        <div id="flipbook-container" class="flipbook-wrapper">
+            <div id="flipbook"></div>
+        </div>
+    </main>
+
+    <!-- Minimal Footer Indicator -->
+    <footer class="app-footer">
+        <span id="page-indicator">Page -- of --</span>
+    </footer>
+
+    <!-- Search Modal Drawer -->
+    <div class="modal" id="search-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Search Newsletter</h3>
+                <button class="close-btn" id="close-search">&times;</button>
             </div>
-            <div class="magazine-spine"></div>
-          </div>
-          <div class="mockup-shadow"></div>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Type keyword and press Enter..." />
+            </div>
+            <div class="search-results" id="search-results"></div>
         </div>
-      </div>
-    </main>
-  </section>
-
-  <!-- Main Digital Reader Interface -->
-  <div id="reader-interface" class="reader-interface hidden">
-    <!-- Top Floating Navigation Bar -->
-    <header class="reader-topbar">
-      <div class="topbar-left">
-        <button id="btn-back-home" class="icon-btn" title="Return to Home">
-          <i class="icon-chevron-left"></i>
-        </button>
-        <div class="topbar-brand">
-          <span class="topbar-school" id="cfg-topbar-school">Presidency School</span>
-          <span class="topbar-title" id="cfg-topbar-title">INKSPIRE</span>
-        </div>
-      </div>
-
-      <div class="topbar-center">
-        <div class="page-indicator">
-          <span id="current-page-num">1</span>
-          <span class="divider">/</span>
-          <span id="total-pages-num">--</span>
-        </div>
-      </div>
-
-      <div class="topbar-right">
-        <button id="btn-toggle-toc" class="tool-btn" title="Table of Contents">
-          <i class="icon-book-open"></i>
-          <span class="btn-label">Contents</span>
-        </button>
-        <button id="btn-toggle-search" class="tool-btn" title="Search Document">
-          <i class="icon-search"></i>
-          <span class="btn-label">Search</span>
-        </button>
-        <div class="vertical-divider"></div>
-        <button id="btn-zoom-out" class="icon-btn" title="Zoom Out"><i class="icon-zoom-out"></i></button>
-        <button id="btn-zoom-in" class="icon-btn" title="Zoom In"><i class="icon-zoom-in"></i></button>
-        <button id="btn-fullscreen" class="icon-btn" title="Toggle Fullscreen"><i class="icon-maximize"></i></button>
-      </div>
-    </header>
-
-    <!-- PageFlip Canvas / Container Wrapper -->
-    <main class="flipbook-viewport" id="viewport">
-      <div id="flipbook-stage" class="flipbook-stage">
-        <!-- PageFlip.js injects DOM elements here -->
-        <div id="book" class="st-page-flip"></div>
-      </div>
-      
-      <!-- Side Navigation Handles -->
-      <button id="btn-prev-page" class="nav-arrow nav-prev" aria-label="Previous Page">
-        <i class="icon-chevron-left"></i>
-      </button>
-      <button id="btn-next-page" class="nav-arrow nav-next" aria-label="Next Page">
-        <i class="icon-chevron-right"></i>
-      </button>
-    </main>
-  </div>
-
-  <!-- Table of Contents Modal Window -->
-  <div id="toc-modal" class="modal-overlay hidden">
-    <div class="modal-window toc-window">
-      <header class="modal-header">
-        <h3>Table of Contents</h3>
-        <button id="btn-close-toc" class="icon-btn close-btn"><i class="icon-x"></i></button>
-      </header>
-      <div class="modal-body">
-        <div id="toc-grid" class="toc-grid">
-          <!-- Dynamic cards injected via JavaScript -->
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Floating Search Overlay -->
-  <div id="search-modal" class="modal-overlay hidden">
-    <div class="modal-window search-window">
-      <header class="modal-header">
-        <div class="search-input-wrapper">
-          <i class="icon-search search-icon"></i>
-          <input type="text" id="search-input" placeholder="Search publication..." autocomplete="off">
-          <button id="btn-clear-search" class="icon-btn hidden"><i class="icon-x"></i></button>
+    <!-- Table of Contents Modal Drawer -->
+    <div class="modal" id="toc-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Table of Contents</h3>
+                <button class="close-btn" id="close-toc">&times;</button>
+            </div>
+            <ul class="toc-list" id="toc-list"></ul>
         </div>
-        <button id="btn-close-search" class="icon-btn close-btn"><i class="icon-x"></i></button>
-      </header>
-      <div class="modal-body">
-        <div id="search-results-list" class="search-results-list">
-          <div class="search-empty-state">Enter keywords above to query the document.</div>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Dependencies & Main Script -->
-  <script src="config.js"></script>
-  <!-- Keep existing PDF.js & PageFlip.js script imports here -->
-  <script src="app.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Register Service Worker for Offline PWA support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('ServiceWorker registered:', reg.scope))
+                    .catch(err => console.error('ServiceWorker registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>

@@ -1,37 +1,24 @@
 {
-  "name": "INKSPIRE - Presidency School Banashankari",
-  "short_name": "INKSPIRE",
-  "description": "Official digital publication and magazine reader of Presidency School Banashankari.",
+  "name": "School Newsletter Digital Reader",
+  "short_name": "Gazette PWA",
+  "description": "Premium School Digital Newsletter Flipbook",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
+  "background_color": "#e5e5eb",
+  "theme_color": "#1a1a1e",
   "orientation": "any",
-  "background_color": "#001224",
-  "theme_color": "#002147",
   "icons": [
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-192-maskable.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
