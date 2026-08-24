@@ -1,87 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>School Newsletter - Digital Flipbook</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Heat Waves — Official Digital Magazine</title>
+  
+  <!-- Google Fonts: Editorial Serif + Modern Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#1a1a1e">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+  <!-- PageFlip.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 
-    <link rel="stylesheet" href="./style.css">
-
-    <!-- External Open Source Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
-    <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="brand-title">School Gazette</div>
-        <div class="header-controls">
-            <button id="btn-toc" title="Table of Contents" class="icon-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-            </button>
-            <button id="btn-search" title="Search Text" class="icon-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </button>
-            <button id="btn-fullscreen" title="Toggle Fullscreen" class="icon-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-            </button>
-        </div>
-    </header>
+  <!-- Background Lighting Effects -->
+  <div class="ambient-light">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="grain-overlay"></div>
+  </div>
 
-    <main class="viewport-stage" id="zoom-stage">
-        <div class="loading-overlay" id="loader">
-            <div class="spinner"></div>
-            <p id="loader-status">Preparing digital publication...</p>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="active">
+    <div class="loader-content">
+      <div class="loader-badge">Heat Waves</div>
+      <div class="spinner-container">
+        <div class="spinner-ring"></div>
+      </div>
+      <p id="loading-status">Preparing publication...</p>
+      <div class="progress-bar-bg">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div id="app">
+
+    <!-- Hero Landing Page -->
+    <section id="hero-section" class="visible">
+      <div class="hero-container">
+        
+        <!-- Header Brand Badge -->
+        <header class="hero-brand">
+          <span class="publication-tag">
+            <span class="live-dot"></span> Official School Digital Magazine
+          </span>
+          <span class="edition-badge" id="hero-edition-date">Spring / Summer Edition</span>
+        </header>
+
+        <!-- Hero Main Content Split -->
+        <div class="hero-body">
+          <div class="hero-text-block">
+            <h1 class="magazine-title">
+              Heat<br/><i class="serif-italic">Waves</i>
+            </h1>
+            <p class="hero-description">
+              Stories, artwork, ideas, and voices from our student community. Crafted into a modern digital reading experience.
+            </p>
+
+            <div class="hero-cta-group">
+              <button id="btn-open-issue" class="primary-btn">
+                <span>Open Issue</span>
+                <i data-lucide="arrow-right" class="btn-icon"></i>
+              </button>
+              <button id="btn-hero-toc" class="secondary-btn">
+                <i data-lucide="layout-grid" class="btn-icon"></i>
+                <span>Table of Contents</span>
+              </button>
+            </div>
+
+            <div class="meta-row">
+              <div class="meta-item">
+                <span class="meta-label">Total Pages</span>
+                <span class="meta-value" id="meta-total-pages">--</span>
+              </div>
+              <div class="meta-divider"></div>
+              <div class="meta-item">
+                <span class="meta-label">Format</span>
+                <span class="meta-value">HD Interactive</span>
+              </div>
+              <div class="meta-divider"></div>
+              <div class="meta-item">
+                <span class="meta-label">Updated</span>
+                <span class="meta-value" id="meta-updated-date">Recently</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Spotlight Book Visual -->
+          <div class="hero-visual">
+            <div class="magazine-cover-card" id="hero-cover-card">
+              <div class="cover-shine"></div>
+              <canvas id="hero-cover-canvas"></canvas>
+              <div class="cover-fallback" id="cover-fallback">
+                <i data-lucide="book-open"></i>
+                <span>Heat Waves</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="flipbook-container" class="flipbook-wrapper">
-            <div id="flipbook"></div>
+      </div>
+    </section>
+
+    <!-- Flipbook Reader Stage -->
+    <main id="reader-stage" class="hidden">
+      
+      <!-- Top Navigation Bar -->
+      <nav class="reader-nav">
+        <div class="nav-left">
+          <button id="btn-back-hero" class="icon-btn-text" title="Return to Cover">
+            <i data-lucide="chevron-left"></i>
+            <span>Back</span>
+          </button>
+          <div class="nav-divider"></div>
+          <div class="publication-info">
+            <span class="publication-title">Heat Waves</span>
+            <span class="publication-sub">Issue N° 04</span>
+          </div>
         </div>
+
+        <div class="nav-center">
+          <div class="page-controls">
+            <button id="btn-prev" class="nav-icon-btn" title="Previous Page (←)">
+              <i data-lucide="arrow-left"></i>
+            </button>
+            
+            <div class="page-indicator">
+              <input type="number" id="page-input" value="1" min="1" />
+              <span class="slash">/</span>
+              <span id="page-total">--</span>
+            </div>
+
+            <button id="btn-next" class="nav-icon-btn" title="Next Page (→)">
+              <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="nav-right">
+          <button id="btn-search" class="nav-icon-btn" title="Search (Ctrl+F)">
+            <i data-lucide="search"></i>
+          </button>
+          <button id="btn-toc" class="nav-icon-btn" title="Thumbnails">
+            <i data-lucide="grid"></i>
+          </button>
+          <div class="nav-divider"></div>
+          <button id="btn-zoom-out" class="nav-icon-btn" title="Zoom Out">
+            <i data-lucide="zoom-out"></i>
+          </button>
+          <button id="btn-zoom-reset" class="nav-icon-btn-text" title="Reset Zoom">
+            <span id="zoom-level-text">100%</span>
+          </button>
+          <button id="btn-zoom-in" class="nav-icon-btn" title="Zoom In">
+            <i data-lucide="zoom-in"></i>
+          </button>
+          <div class="nav-divider"></div>
+          <button id="btn-fullscreen" class="nav-icon-btn" title="Toggle Fullscreen (F)">
+            <i data-lucide="maximize-2"></i>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Stage Area for Flipbook -->
+      <div id="stage-viewport">
+        <div id="flipbook-wrapper">
+          <div id="flipbook"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Hint Bar -->
+      <footer class="reader-footer">
+        <div class="reading-hint">
+          <span>Click corner or drag to turn pages</span>
+          <span class="dot">•</span>
+          <span>Use <kbd>←</kbd> <kbd>→</kbd> keys</span>
+        </div>
+      </footer>
+
     </main>
 
-    <footer class="app-footer">
-        <span id="page-indicator">Page -- of --</span>
-    </footer>
-
-    <div class="modal" id="search-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Search Newsletter</h3>
-                <button class="close-btn" id="close-search">&times;</button>
-            </div>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="Type keyword and press Enter..." />
-            </div>
-            <div class="search-results" id="search-results"></div>
+    <!-- Search Overlay Modal -->
+    <div id="search-modal" class="modal">
+      <div class="modal-backdrop" id="search-backdrop"></div>
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="search-input-wrapper">
+            <i data-lucide="search" class="search-input-icon"></i>
+            <input type="text" id="search-input" placeholder="Search articles, authors, topics..." autofocus />
+            <button id="btn-clear-search" class="icon-btn-small"><i data-lucide="x"></i></button>
+          </div>
+          <button class="close-modal-btn" id="btn-close-search"><i data-lucide="x"></i></button>
         </div>
+        <div class="modal-body">
+          <div id="search-results-list" class="search-results-list">
+            <p class="search-empty-state">Type a word above to search throughout the issue.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="modal" id="toc-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Table of Contents</h3>
-                <button class="close-btn" id="close-toc">&times;</button>
-            </div>
-            <ul class="toc-list" id="toc-list"></ul>
+    <!-- Table of Contents / Thumbnail Grid Modal -->
+    <div id="toc-modal" class="modal">
+      <div class="modal-backdrop" id="toc-backdrop"></div>
+      <div class="modal-card modal-card-large">
+        <div class="modal-header">
+          <h3 class="modal-title">Table of Contents</h3>
+          <button class="close-modal-btn" id="btn-close-toc"><i data-lucide="x"></i></button>
         </div>
+        <div class="modal-body">
+          <div id="thumbnail-grid" class="thumbnail-grid"></div>
+        </div>
+      </div>
     </div>
 
-    <script src="./script.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('ServiceWorker registered:', reg.scope))
-                    .catch(err => console.error('ServiceWorker registration failed:', err));
-            });
-        }
-    </script>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
